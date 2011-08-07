@@ -23,11 +23,18 @@ def main():
 
 	p1=readPoint(1)
 	p2=readPoint(2)
-	a,b=(float(t) for t in sys.argv[3].split('|'))
+	pr=sys.argv[3]
+	if '|' in pr:
+		a,b=(float(t) for t in pr.split('|'))
+		w1=b/(a+b)
+		w2=a/(a+b)
+	else:
+		w2=float(pr)
+		w1=1-w2
 
 	pm=(
-		p1[0]*b/(a+b)+p2[0]*a/(a+b),
-		p1[1]*b/(a+b)+p2[1]*a/(a+b),
+		p1[0]*w1+p2[0]*w2,
+		p1[1]*w1+p2[1]*w2,
 	)
 
 	tData=OsmData.OsmData()
