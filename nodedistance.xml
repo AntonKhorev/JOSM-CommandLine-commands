@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<command version="3" name="Proportion" run="python proportion.py {P1} {P2} {Proportion}">
+<command version="3" name="NodeDistance" run="python nodedistance.py {P1} {P2} {Distance}">
 	<parameter required="true" type="point">
 		<name>P1</name>
 		<description>Start point</description>
@@ -8,9 +8,9 @@
 		<name>P2</name>
 		<description>End point</description>
 	</parameter>
-	<parameter required="true" type="string">
-		<name>Proportion</name>
-		<description>Proportion to put new node (ex: "1|2", "1/3")</description>
-		<value>1|2</value>
+	<parameter required="true" type="length">
+		<name>Distance</name>
+		<description>Distaince from starting point</description>
+		<value>1</value>
 	</parameter>
 </command>
