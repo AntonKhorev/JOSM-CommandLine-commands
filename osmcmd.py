@@ -53,14 +53,18 @@ class Vector:
 	def __init__(self,x,y):
 		self.x=x
 		self.y=y
+	def __mul__(self,scalar):
+		return Vector(self.x*scalar,self.y*scalar)
+	def dir(self):
+		return Direction(self)
+
+class Direction:
+	def __init__(self,vector):
+		len=math.sqrt(vector.x**2+vector.y**2)
+		self.x=vector.x/len
+		self.y=vector.y/len
 	def __mul__(self,length):
 		return Vector(self.x*length.value,self.y*length.value)
-	def unit(self):
-		"""
-		Make unit vector
-		"""
-		len=math.sqrt(self.x**2+self.y**2)
-		return Vector(self.x/len,self.y/len)
 
 class Length:
 	def __init__(self,meters,point):
