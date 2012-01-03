@@ -38,7 +38,10 @@ def main():
 	if mi is None:
 		td.write('Impossible')
 	else:
-		td.write('Intersects after pt '+str(mi))
+		#td.write('Intersects after pt '+str(mi))
+		pi=pc1+(pc1-pc2)*ml
+		td.addNode(pi)
+		td.write()
 
 if __name__=='__main__':
 	main()
