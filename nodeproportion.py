@@ -13,18 +13,13 @@ def main():
 	pr=sys.argv[3]
 	if '|' in pr:
 		a,b=(float(t) for t in pr.split('|'))
-		w1=b/(a+b)
-		w2=a/(a+b)
+		w=b/(a+b)
 	else:
-		w2=float(pr)
-		w1=1-w2
+		w=1-float(pr)
 
-	pm=(
-		p1[0]*w1+p2[0]*w2,
-		p1[1]*w1+p2[1]*w2,
-	)
+	pm=p1+(p2-p1)*w
 
-	td=osmcmd.data()
+	td=osmcmd.Data()
 	td.addNode(pm)
 	td.write()
 

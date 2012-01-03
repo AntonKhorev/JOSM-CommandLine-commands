@@ -13,12 +13,9 @@ def main():
 	p2=osmcmd.readPoint(2)
 	l=osmcmd.readLength(3,p1)
 
-	dv=(p2[0]-p1[0],p2[1]-p1[1])
-	dvl=math.sqrt(dv[0]**2+dv[1]**2)
-	dvn=(dv[0]/dvl,dv[1]/dvl)
-	pm=(p1[0]+dvn[0]*l,p1[1]+dvn[1]*l)
+	pm=p1+(p2-p1).unit()*l
 
-	td=osmcmd.data()
+	td=osmcmd.Data()
 	td.addNode(pm)
 	td.write()
 
