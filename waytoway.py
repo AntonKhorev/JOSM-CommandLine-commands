@@ -47,8 +47,16 @@ def main():
 	#resultdata.write('Intersects after pt '+str(mi))
 	pc1,pc2 = (wcpts[0],wcpts[1]) if mf else (wcpts[-1],wcpts[-2])
 	pi=pc1+(pc1-pc2)*ml
-	resultdata.addNode(pi)
-	resultdata.write()
+	#resultdata.addNode(pi)
+	#resultdata.write()
+	id=wudata.addnode()
+	wudata.nodes[id][OsmData.LON]=pi.lon
+	wudata.nodes[id][OsmData.LAT]=pi.lat
+	wudata.nodes[id][OsmData.TAG]={}
+	wudata.ways[wuid][OsmData.ACTION]=OsmData.MODIFY
+	wudata.ways[wuid][OsmData.REF].insert(mi+1,id)
+	wudata.addcomment('Done')
+	wudata.write(sys.stdout)
 
 if __name__=='__main__':
 	main()
