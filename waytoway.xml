@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="WayToWay" run="python waytoway.py">
+        <parameter required="true" type="way">
+                <name>WayContinued</name>
+                <description>Way to continue</description>
+        </parameter>
+	<parameter required="true" type="way">
+                <name>WayUntil</name>
+                <description>Way to continue until</description>
+        </parameter>
+</command>

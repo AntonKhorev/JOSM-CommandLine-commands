@@ -10,6 +10,11 @@ def readPoint(n):
 def readLength(n,point):
 	return Length(float(sys.argv[n]),point)
 
+def readData():
+	data=OsmData.OsmData()
+	data.read(sys.stdin)
+	return data
+
 class Data:
 	def __init__(self):
 		self.odata=OsmData.OsmData()
@@ -18,8 +23,8 @@ class Data:
 		self.odata.nodes[id][OsmData.LON]=point.lon
 		self.odata.nodes[id][OsmData.LAT]=point.lat
 		self.odata.nodes[id][OsmData.TAG]={}
-	def write(self):
-		self.odata.addcomment("Done.")
+	def write(self,msg="Done."):
+		self.odata.addcomment(msg)
 		self.odata.write(sys.stdout)
 
 class Point:
