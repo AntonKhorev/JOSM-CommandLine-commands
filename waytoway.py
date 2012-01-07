@@ -33,7 +33,7 @@ def main():
 			dets=(pc2.x-pc1.x)*(pc1.y-pu1.y)-(pc1.x-pu1.x)*(pc2.y-pc1.y)
 			l=detl/det
 			s=dets/det
-			if s<0 or s>1:
+			if s<0 or s>1 or l<0:
 				continue
 			if l<ml:
 				ml=l
