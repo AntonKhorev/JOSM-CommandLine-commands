@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<command version="3" name="WayToWay" run="python waytoway.py">
+<command version="3" name="ShootWayToWay" run="python shootwaytoway.py">
         <parameter required="true" type="way">
                 <name>WayContinued</name>
                 <description>Way to continue</description>
