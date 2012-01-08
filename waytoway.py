@@ -28,11 +28,10 @@ def main():
 	mf=None
 	for f,pc1,pc2 in ((True,wcpts[0],wcpts[1]),(False,wcpts[-1],wcpts[-2])):
 		for i,pu1,pu2 in [(i,wupts[i],wupts[i+1]) for i in range(len(wupts)) if i<len(wupts)-1]:
-			det =(pc2.x-pc1.x)*(pu2.y-pu1.y)-(pu2.x-pu1.x)*(pc2.y-pc1.y)
-			detl=(pc1.x-pu1.x)*(pu2.y-pu1.y)-(pu2.x-pu1.x)*(pc1.y-pu1.y)
-			dets=(pc2.x-pc1.x)*(pc1.y-pu1.y)-(pc1.x-pu1.x)*(pc2.y-pc1.y)
-			l=detl/det
-			s=dets/det
+			l,s=osmcmd.solveLinEqns((
+				(pc2.x-pc1.x,pu2.x-pu1.x,pc1.x-pu1.x),
+				(pc2.y-pc1.y,pu2.y-pu1.y,pc1.y-pu1.y),
+			))
 			if s<0 or s>1 or l<0:
 				continue
 			if l<ml:

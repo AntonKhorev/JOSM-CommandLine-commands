@@ -15,6 +15,15 @@ def readData():
 	data.read(sys.stdin)
 	return data
 
+def solveLinEqns(m):
+	det =m[0][0]*m[1][1]-m[0][1]*m[1][0]
+	det0=m[0][2]*m[1][1]-m[0][1]*m[1][2]
+	det1=m[0][0]*m[1][2]-m[0][2]*m[1][0]
+	if det==0:
+		return float('inf'),float('inf')
+	else:
+		return det0/det,det1/det
+
 class Data:
 	def __init__(self):
 		self.odata=OsmData.OsmData()
