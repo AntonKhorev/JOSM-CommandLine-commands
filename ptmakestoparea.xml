@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="PtMakeStopArea" run="python ptmakestoparea.py">
+        <parameter required="true" type="node" maxinstances="0">
+                <name>Nodes</name>
+                <description>Platform and stop nodes</description>
+        </parameter>
+</command>
