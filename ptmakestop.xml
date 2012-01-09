@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="PtMakeStop" run="python ptmakestop.py">
+        <parameter required="true" type="node">
+                <name>PlatformNode</name>
+                <description>Platform node</description>
+        </parameter>
+	<parameter required="true" type="way">
+                <name>Way</name>
+                <description>Way for stop position</description>
+        </parameter>
+</command>
