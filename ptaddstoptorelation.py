@@ -5,6 +5,23 @@ import sys
 import OsmData
 import osmcmd
 
+def writeHack(self,targetStream):
+	targetStream.write("<osm version=\"0.6\">\n")
+
+	# Modifying: WRITE RELATION FIRST
+	for relation in self.relations.items():
+		if relation[1].get(OsmData.ACTION) != OsmData.MODIFY:
+			continue
+		targetStream.write(self.xmlrelation(relation))
+	for node in self.nodes.items():
+		if node[1].get(OsmData.ACTION) != OsmData.MODIFY:
+			continue
+		targetStream.write(self.xmlnode(node))
+
+	for text in self.comments:
+		targetStream.write("<!--" + text + "-->\n")
+	targetStream.write("</osm>")
+
 def main():
 	data=osmcmd.readData()
 	nrdata=osmcmd.readData()
@@ -40,6 +57,7 @@ def main():
 		if np!=1 or ns!=1:
 			resultdata=osmcmd.Data()
 			resultdata.write('ERROR: need exactly one stop and one platform to add to route')
+			return
 		isempty=len(rel[OsmData.REF][OsmData.NODES])<=0
 		rel[OsmData.ACTION]=OsmData.MODIFY
 		rel[OsmData.REF][OsmData.NODES][0:0]=[(stopid,'stop'),(platformid,'platform')]
@@ -60,7 +78,8 @@ def main():
 			nrdata.addcomment("stop added at the beginning of route with no stops")
 		else:
 			nrdata.addcomment("WARNING: stop order wasn't determined - stop added at the beginning")
-		nrdata.write(sys.stdout)
+		#nrdata.write(sys.stdout)
+		writeHack(nrdata,sys.stdout)
 	else:
 		resultdata=osmcmd.Data()
 		resultdata.write('ERROR: unsupported relation type')
