@@ -7,13 +7,12 @@ import osmcmd
 
 def main():
 	data=osmcmd.readData()
-	reldata=osmcmd.readData()
-	relid,rel=next(iter(reldata.relations.items()))
-	nodedata=osmcmd.readData()
+	nrdata=osmcmd.readData()
+	relid,rel=next(iter(nrdata.relations.items()))
 
 	if rel[OsmData.TAG].get('type')=='public_transport' and rel[OsmData.TAG].get('public_transport')=='stop_area':
 		n=0
-		for id,node in nodedata.nodes.items():
+		for id,node in nrdata.nodes.items():
 			if node[OsmData.TAG].get('public_transport')=='stop_position':
 				rel[OsmData.REF][OsmData.NODES].append((id,'stop'))
 				n+=1
@@ -22,8 +21,8 @@ def main():
 				n+=1
 		if n>0:
 			rel[OsmData.ACTION]=OsmData.MODIFY
-			reldata.addcomment(str(n)+' stops/platforms added to stop area')
-			reldata.write(sys.stdout)
+			nrdata.addcomment(str(n)+' stops/platforms added to stop area')
+			nrdata.write(sys.stdout)
 		else:
 			resultdata=osmcmd.Data()
 			resultdata.write('WARNING: no stops/platforms added to stop area')
