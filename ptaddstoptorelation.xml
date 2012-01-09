@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="PtAddStopToRelation" run="python ptaddstoptorelation.py">
+	<parameter required="true" type="relation">
+		<name>Relation</name>
+		<description>Stop area or route relation</description>
+	</parameter>
+	<parameter required="true" type="node" maxinstances="0">
+		<name>Nodes</name>
+		<description>Platform and stop nodes</description>
+	</parameter>
+</command>
