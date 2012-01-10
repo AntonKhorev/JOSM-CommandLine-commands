@@ -51,20 +51,18 @@ def determineInsertPosition(data,rel,stopid):
 			wnids=way[OsmData.REF][::-1] if reversed else way[OsmData.REF]
 			for wnid in wnids:
 				if wnid==stopid:
-					return preceding_stopid, sure or all(p[0] not in wnids for p in refnodes)
+					return preceding_stopid, None if sure or all(p[0] not in wnids for p in refnodes) else "Ambiguous way direction"
 				if wnid in [p[0] for p in refnodes]:
 					preceding_stopid=wnid
 			prev_end_id=wnids[-1]
-		return None,True
-	preceding_stopid,sure_in_way_direction=detPrecedingStopId()
+		return None,"Dangling currently added stop"
+	preceding_stopid,warning_reason=detPrecedingStopId()
 
-	warning_reasons=[]
-	if not sure_in_way_direction:
-		warning_reasons.append("Ambiguous way direction")
+	warning_reasons=[warning_reason] if warning_reason is not None else []
 	if any(p[0] not in (
 		id for p in refways for id in data.ways[p[0]][OsmData.REF]
 	) for p in refnodes if p[1].startswith('stop')):
-		warning_reasons.append("Dangling stops")
+		warning_reasons.append("Dangling stops added before")
 	msg_prefix="WARNING: stop order wasn't determined because of "+' and '.join(warning_reasons)+'; ' if warning_reasons else ''
 
 	if preceding_stopid is None:
