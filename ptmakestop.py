@@ -4,7 +4,7 @@
 import sys
 import OsmData
 import osmcmd
-import shootnodetoway
+import shoot
 
 def main():
 	data=osmcmd.readData()
@@ -13,7 +13,7 @@ def main():
 	wayid=next(iter(nwdata.ways))
 	n=0
 	for platformid in nwdata.nodes:
-		stopid=shootnodetoway.sntw(data,platformid,wayid)
+		stopid=shoot.sntw(data,platformid,wayid)
 		if stopid is None:
 			continue
 		n+=1
