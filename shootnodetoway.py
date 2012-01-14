@@ -7,11 +7,9 @@ import OsmData
 
 def sntw(data,nodeid,wayid):
 	node=data.nodes[nodeid]
-	nodept=osmcmd.Point('latlon',node[OsmData.LAT],node[OsmData.LON])
+	nodept=osmcmd.makePointFromNode(node)
 	way=data.ways[wayid]
-	waypts=[osmcmd.Point('latlon',waynode[OsmData.LAT],waynode[OsmData.LON]) for waynode in [
-		data.nodes[id] for id in way[OsmData.REF]
-	]]
+	waypts=osmcmd.makePointsFromWay(way,data)
 
 	mi=None
 	ml=float('inf')
@@ -20,10 +18,7 @@ def sntw(data,nodeid,wayid):
 		np1=nodept
 		dwp=wp2-wp1
 		np2=np1+osmcmd.Vector(-dwp.y,dwp.x) # fake point to make perpendicular line
-		l,s=osmcmd.solveLinEqns((
-			(np2.x-np1.x,wp2.x-wp1.x,np1.x-wp1.x),
-			(np2.y-np1.y,wp2.y-wp1.y,np1.y-wp1.y),
-		))
+		l,s=osmcmd.shoot(np1,np2,wp1,wp2)
 		if s<0 or s>1:
 			continue
 		if abs(l)<abs(ml):
@@ -47,18 +42,25 @@ def sntw(data,nodeid,wayid):
 def main():
 	data=osmcmd.readData()
 	nodedata=osmcmd.readData()
-	nodeid=next(iter(nodedata.nodes))
 	data.mergedata(nodedata)
 	waydata=osmcmd.readData()
 	wayid=next(iter(waydata.ways))
 	data.mergedata(waydata)
-	id=sntw(data,nodeid,wayid)
-	if id is None:
-		resultdata=osmcmd.Data()
-		resultdata.write('Impossible')
-	else:
-		data.addcomment('Done')
+	n=0
+	ns=0
+	for nodeid in nodedata.nodes:
+		id=sntw(data,nodeid,wayid)
+		if id is None:
+			ns+=1
+		else:
+			n+=1
+
+	if n>0:
+		data.addcomment(str(n)+' nodes shot, '+str(ns)+' nodes skipped')
 		data.write(sys.stdout)
+	else:
+		resultdata=osmcmd.Data()
+		resultdata.write('WARNING: no nodes shot')
 
 if __name__=='__main__':
 	main()

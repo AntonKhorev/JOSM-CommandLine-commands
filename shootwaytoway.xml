@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <command version="3" name="ShootWayToWay" run="python shootwaytoway.py">
-        <parameter required="true" type="way">
-                <name>WayContinued</name>
-                <description>Way to continue</description>
-        </parameter>
+	<parameter required="true" type="way" mininstances="1" maxinstances="0">
+		<name>WayFrom</name>
+		<description>Ways to shoot from</description>
+	</parameter>
 	<parameter required="true" type="way">
-                <name>WayUntil</name>
-                <description>Way to continue until</description>
-        </parameter>
+		<name>WayTo</name>
+		<description>Way to shoot to</description>
+	</parameter>
 </command>

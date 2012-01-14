@@ -24,6 +24,22 @@ def solveLinEqns(m):
 	else:
 		return det0/det,det1/det
 
+def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
+	return solveLinEqns((
+		(pf2.x-pf1.x,pt2.x-pt1.x,pf1.x-pt1.x),
+		(pf2.y-pf1.y,pt2.y-pt1.y,pf1.y-pt1.y),
+	))
+
+# TODO put to Data class
+def makePointFromNode(node):
+	return Point('latlon',node[OsmData.LAT],node[OsmData.LON])
+
+# TODO put to Data class
+def makePointsFromWay(way,data):
+	return [Point('latlon',waynode[OsmData.LAT],waynode[OsmData.LON]) for waynode in (
+		data.nodes[id] for id in way[OsmData.REF]
+	)]
+
 class Data:
 	def __init__(self):
 		self.odata=OsmData.OsmData()
