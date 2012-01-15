@@ -6,11 +6,11 @@ import OsmData
 import osmcmd
 import functools
 
-def rewireWay(data,rewireid,fromid,toid,tosidewalkid):
+def rewireWay(data,rewireid,fromid,toroadid,tosidewalkid):
 	nnodes=0
 	rw=data.ways[rewireid]
 	fw=data.ways[fromid]
-	tw=data.ways[toid]
+	trw=data.ways[toroadid]
 	def getIntersections():
 		return ((ri,fi,rid)
 			for ri,rid in enumerate(rw[OsmData.REF])
@@ -29,19 +29,21 @@ def rewireWay(data,rewireid,fromid,toid,tosidewalkid):
 
 		rpt1=osmcmd.makePointFromNode(data.nodes[rid1])
 		rpt2=osmcmd.makePointFromNode(data.nodes[rid2])
-		l,ti=functools.reduce(min,
-			((l,ti) for ti,(l,s) in (
-				(i,osmcmd.shoot(rpt1,rpt2,
-					osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i]]),
-					osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i+1]])
-				)) for i in range(len(tw[OsmData.REF])-1)
-			) if s>0 and s<1 and l>0),
-			(float('inf'),None)
-		)
-		if ti is None:
+		def shootToWay(tw):
+			return functools.reduce(min,
+				((l,ti) for ti,(l,s) in (
+					(i,osmcmd.shoot(rpt1,rpt2,
+						osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i]]),
+						osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i+1]])
+					)) for i in range(len(tw[OsmData.REF])-1)
+				) if s>0 and s<1 and l>0),
+				(float('inf'),None)
+			)
+		lr,tri=shootToWay(trw)
+		if tri is None:
 			continue
 
-		rpt3=rpt1+(rpt2-rpt1)*l
+		rpt3=rpt1+(rpt2-rpt1)*lr
 		# remove node 'from'
 		fw[OsmData.ACTION]=OsmData.MODIFY
 		fw[OsmData.REF].pop(fi)
@@ -50,10 +52,37 @@ def rewireWay(data,rewireid,fromid,toid,tosidewalkid):
 		data.nodes[iid][OsmData.LAT]=rpt3.lat
 		data.nodes[iid][OsmData.LON]=rpt3.lon
 		# add node 'to'
-		tw[OsmData.ACTION]=OsmData.MODIFY
-		tw[OsmData.REF].insert(ti+1,iid)
-		# TODO sidewalk
+		trw[OsmData.ACTION]=OsmData.MODIFY
+		trw[OsmData.REF].insert(tri+1,iid)
+
 		nnodes+=1
+
+		# sidewalk
+		if tosidewalkid is None:
+			continue
+		tsw=data.ways[tosidewalkid]
+		ls,tsi=shootToWay(tsw)
+		if ls>lr:
+			continue
+		# add new node at intersection w/ sidewalk
+		rpt4=rpt1+(rpt2-rpt1)*ls
+		nid=data.addnode()
+		data.nodes[nid][OsmData.LON]=rpt4.lon
+		data.nodes[nid][OsmData.LAT]=rpt4.lat
+		tsw[OsmData.ACTION]=OsmData.MODIFY
+		tsw[OsmData.REF].insert(tsi+1,nid)
+		rw[OsmData.ACTION]=OsmData.MODIFY
+		if 'highway' in rw[OsmData.TAG] and rw[OsmData.TAG]!='footway' and rw[OsmData.TAG].get('foot')!='no':
+			# split way
+			nid2=data.addway()
+			data.ways[nid2][OsmData.TAG]=rw[OsmData.TAG].copy()
+			data.ways[nid2][OsmData.TAG]['foot']='no'
+			data.ways[nid2][OsmData.REF] = [iid,nid] if ri==0 else [nid,iid]
+			rw[OsmData.REF][0 if ri==0 else -1]=nid
+		else:
+			# simply insert node
+			rw[OsmData.REF].insert(1 if ri==0 else -1, nid)
+
 	return nnodes
 
 def main():
