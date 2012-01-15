@@ -19,11 +19,11 @@ def rewireWay(data,rewireid,fromid,toid,tosidewalkid):
 		)
 	for ri,fi,iid in getIntersections():
 		if ri==0:
-			rid1=iid
-			rid2=rw[OsmData.REF][1]
+			rid2=iid
+			rid1=rw[OsmData.REF][1]
 		elif ri==len(rw[OsmData.REF])-1:
-			rid1=iid
-			rid2=rw[OsmData.REF][-2]
+			rid2=iid
+			rid1=rw[OsmData.REF][-2]
 		else:
 			continue # TODO
 
@@ -41,7 +41,7 @@ def rewireWay(data,rewireid,fromid,toid,tosidewalkid):
 		if ti is None:
 			continue
 
-		rpt3=rpt1+(rpt1-rpt2)*l
+		rpt3=rpt1+(rpt2-rpt1)*l
 		# remove node 'from'
 		fw[OsmData.ACTION]=OsmData.MODIFY
 		fw[OsmData.REF].pop(fi)

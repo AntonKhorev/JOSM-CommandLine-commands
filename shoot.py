@@ -48,10 +48,10 @@ def swtw(data,wcid,wuid):
 	mi=None
 	ml=float('inf')
 	mf=None
-	for f,pc1,pc2 in ((True,wcpts[0],wcpts[1]),(False,wcpts[-1],wcpts[-2])):
+	for f,pc1,pc2 in ((True,wcpts[1],wcpts[0]),(False,wcpts[-2],wcpts[-1])):
 		for i,pu1,pu2 in ((i,wupts[i],wupts[i+1]) for i in range(len(wupts)-1)):
 			l,s=osmcmd.shoot(pc1,pc2,pu1,pu2)
-			if s<0 or s>1 or l<0:
+			if s<0 or s>1 or l<1:
 				continue
 			if l<ml:
 				ml=l
@@ -61,8 +61,8 @@ def swtw(data,wcid,wuid):
 	if mi is None:
 		return None
 
-	pc1,pc2 = (wcpts[0],wcpts[1]) if mf else (wcpts[-1],wcpts[-2])
-	pi=pc1+(pc1-pc2)*ml
+	pc1,pc2 = (wcpts[1],wcpts[0]) if mf else (wcpts[-2],wcpts[-1])
+	pi=pc1+(pc2-pc1)*ml
 	id=data.addnode()
 	data.nodes[id][OsmData.LON]=pi.lon
 	data.nodes[id][OsmData.LAT]=pi.lat

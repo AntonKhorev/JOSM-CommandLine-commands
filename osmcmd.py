@@ -26,8 +26,8 @@ def solveLinEqns(m):
 
 def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
 	return solveLinEqns((
-		(pf2.x-pf1.x,pt2.x-pt1.x,pf1.x-pt1.x),
-		(pf2.y-pf1.y,pt2.y-pt1.y,pf1.y-pt1.y),
+		(pf2.x-pf1.x,pt1.x-pt2.x,pt1.x-pf1.x),
+		(pf2.y-pf1.y,pt1.y-pt2.y,pt1.y-pf1.y),
 	))
 
 # TODO put to Data class
