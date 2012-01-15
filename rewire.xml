@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <command version="3" name="Rewire" run="python rewire.py">
-	<parameter required="true" type="any" mininstances="3" maxinstances="0">
+	<parameter required="true" type="any" mininstances="1" maxinstances="0">
 		<name>Objects</name>
-		<description>Way to rewire from, to and stuff to rewire</description>
+		<description>What to rewire</description>
+	</parameter>
+	<parameter required="true" type="way">
+		<name>WayFrom</name>
+		<description>Way to rewire from</description>
+	</parameter>
+	<parameter required="true" type="way" maxinstances="0">
+		<name>Objects</name>
+		<description>Ways (street + maybe sidewalk) to rewire to</description>
 	</parameter>
 </command>

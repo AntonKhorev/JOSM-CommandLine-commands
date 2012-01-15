@@ -94,8 +94,7 @@ def main():
 			nrdata.addcomment(str(n)+' stops/platforms added to stop area')
 			nrdata.write(sys.stdout)
 		else:
-			resultdata=osmcmd.Data()
-			resultdata.write('WARNING: no stops/platforms added to stop area')
+			osmcmd.fail('WARNING: no stops/platforms added to stop area')
 	elif rel[OsmData.TAG].get('type')=='route':
 		ns=np=0
 		for id,node in nrdata.nodes.items():
@@ -108,8 +107,7 @@ def main():
 				platformid=id
 				platformnode=node
 		if np!=1 or ns!=1:
-			resultdata=osmcmd.Data()
-			resultdata.write('ERROR: need exactly one stop and one platform to add to route')
+			osmcmd.fail('ERROR: need exactly one stop and one platform to add to route')
 			return
 		position,reason=determineInsertPosition(data,rel,stopid)
 		rel[OsmData.ACTION]=OsmData.MODIFY
@@ -131,8 +129,7 @@ def main():
 		#nrdata.write(sys.stdout)
 		writeHack(nrdata,sys.stdout)
 	else:
-		resultdata=osmcmd.Data()
-		resultdata.write('ERROR: unsupported relation type')
+		osmcmd.fail('ERROR: unsupported relation type')
 
 if __name__=='__main__':
 	main()

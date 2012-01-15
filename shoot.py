@@ -104,8 +104,7 @@ def main():
 		data.addcomment(str(nn)+' nodes shot, '+str(nns)+' nodes skipped, '+str(nw)+' ways shot, '+str(nws)+' ways skipped')
 		data.write(sys.stdout)
 	else:
-		resultdata=osmcmd.Data()
-		resultdata.write('WARNING: no nodes/ways shot')
+		osmcmd.fail('WARNING: no nodes/ways shot')
 
 if __name__=='__main__':
 	main()

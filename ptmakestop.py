@@ -25,8 +25,7 @@ def main():
 		data.addcomment(str(n)+' stops created')
 		data.write(sys.stdout)
 	else:
-		resultdata=osmcmd.Data()
-		resultdata.write('WARNING: no stops created')
+		osmcmd.fail('WARNING: no stops created')
 
 if __name__=='__main__':
 	main()

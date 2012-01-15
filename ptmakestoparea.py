@@ -32,8 +32,7 @@ def main():
 			rel[OsmData.TAG]['name']=node[OsmData.TAG]['name']
 
 	if len(rel[OsmData.REF][OsmData.NODES])<=0:
-		resultdata=osmcmd.Data()
-		resultdata.write('No stops/platforms provided')
+		osmcmd.fail('No stops/platforms provided')
 	else:
 		data.addcomment('Done')
 		data.write(sys.stdout)

@@ -40,6 +40,10 @@ def makePointsFromWay(way,data):
 		data.nodes[id] for id in way[OsmData.REF]
 	)]
 
+def fail(msg):
+	resultdata=Data()
+	resultdata.write(msg)
+
 class Data:
 	def __init__(self):
 		self.odata=OsmData.OsmData()
