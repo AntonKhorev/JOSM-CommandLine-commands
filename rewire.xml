@@ -4,7 +4,7 @@
 		<name>Objects</name>
 		<description>What to rewire</description>
 	</parameter>
-	<parameter required="true" type="way">
+	<parameter required="true" type="way" maxinstances="0">
 		<name>WayFrom</name>
 		<description>Way to rewire from</description>
 	</parameter>

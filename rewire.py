@@ -85,6 +85,17 @@ def rewireWay(data,rewireid,fromid,toroadid,tosidewalkid):
 
 	return nnodes
 
+def rewireRestriction(data,rewireid,fromid,toid):
+	nmembers=0
+	rel=data.relations[rewireid]
+	for i,(wid,wrole) in enumerate(rel[OsmData.REF][OsmData.WAYS]):
+		if wid!=fromid or wrole not in ('from','to'):
+			continue
+		rel[OsmData.ACTION]=OsmData.MODIFY
+		rel[OsmData.REF][OsmData.WAYS][0]=(toid,wrole)
+		nmembers+=1
+	return nmembers
+
 def main():
 	data=osmcmd.readData()
 	rewiredata=osmcmd.readData()
@@ -109,13 +120,16 @@ def main():
 		osmcmd.fail('ERROR: no way to rewire to')
 		return
 
-	n=0
+	nn=nm=0
 	for rewireid in rewiredata.ways:
-		n+=rewireWay(data,rewireid,fromid,toroadid,tosidewalkid)
-	if n==0:
+		nn+=rewireWay(data,rewireid,fromid,toroadid,tosidewalkid)
+	for rewireid,rewirerel in rewiredata.relations.items():
+		if rewirerel[OsmData.TAG].get('type')=='restriction':
+			nm+=rewireRestriction(data,rewireid,fromid,toroadid)
+	if nn==0 and nm==0:
 		osmcmd.fail('WARNING: nothing changed')
 	else:
-		data.addcomment(str(n)+' nodes rewired')
+		data.addcomment(str(nn)+' nodes rewired, '+str(nm)+' relation members changed')
 		data.write(sys.stdout)
 
 if __name__=='__main__':
