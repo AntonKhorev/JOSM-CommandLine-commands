@@ -65,11 +65,16 @@ def main():
 	opdata=osmcmd.readData()
 	data.mergedata(opdata)
 
-	candidates=[
-		crid for crid in opdata.ways if all(
-			waysCross(crid,whid) for whid in opdata.ways if whid!=crid
-		)
-	]
+	if len(opdata.ways)==2:
+		candidates=[
+			crid for crid,crway in opdata.ways.items() if crway[OsmData.TAG].get('highway')=='footway'
+		]
+	else:
+		candidates=[
+			crid for crid in opdata.ways if all(
+				waysCross(crid,whid) for whid in opdata.ways if whid!=crid
+			)
+		]
 	if len(candidates)<=0:
 		osmcmd.fail('ERROR: no way that crosses all other ways')
 	elif len(candidates)>1:
