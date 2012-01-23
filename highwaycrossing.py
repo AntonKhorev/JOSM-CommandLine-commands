@@ -21,6 +21,11 @@ def main():
 	def makeCrossing(crid,whids):
 		counts={'n':0,'t':0,'u':0,'j':0}
 		crway=data.ways[crid]
+		crway[OsmData.ACTION]=OsmData.MODIFY
+		if 'highway' not in crway[OsmData.TAG]:
+			crway[OsmData.TAG]['highway']='footway'
+		if crway[OsmData.TAG]['highway']=='footway' and 'footway' not in crway[OsmData.TAG]:
+			crway[OsmData.TAG]['footway']='crossing'
 		for whid in whids:
 			whway=data.ways[whid]
 			def attemptCrossTwoWays():
@@ -32,15 +37,13 @@ def main():
 						counts['n']+=1
 						crl,whl=ls
 						newid,newnode=osmcmd.makeNodeFromPoint(data,crpt1+(crpt2-crpt1)*crl)
-						newnode[OsmData.TAG]['highway']='crossing'
-						crway[OsmData.ACTION]=OsmData.MODIFY
 						crway[OsmData.REF].insert(cri+1,newid)
 						whway[OsmData.ACTION]=OsmData.MODIFY
 						whway[OsmData.REF].insert(whi+1,newid)
 
 						n1=data.nodes[data.ways[whid][OsmData.REF][whi]]
 						n2=data.nodes[data.ways[whid][OsmData.REF][whi+1]]
-						if whway.get('highway')=='footway':
+						if whway[OsmData.TAG].get('highway')=='footway':
 							counts['j']+=1
 						elif (	n1[OsmData.TAG].get('highway')=='traffic_signals' or
 							n2[OsmData.TAG].get('highway')=='traffic_signals' or
@@ -48,14 +51,14 @@ def main():
 							n2[OsmData.TAG].get('crossing')=='traffic_signals'
 						):
 							counts['t']+=1
+							newnode[OsmData.TAG]['highway']='crossing'
 							newnode[OsmData.TAG]['crossing']='traffic_signals'
 						else:
 							counts['u']+=1
+							newnode[OsmData.TAG]['highway']='crossing'
 							newnode[OsmData.TAG]['crossing']='uncontrolled'
-						return True
-				return None
-			while attemptCrossTwoWays():
-				pass
+						return
+			attemptCrossTwoWays()
 		return counts
 
 	data=osmcmd.readData()
