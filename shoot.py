@@ -30,11 +30,7 @@ def sntw(data,nodeid,wayid):
 		return None
 
 	wp1,wp2=waypts[mi],waypts[mi+1]
-	pi=wp1+(wp2-wp1)*ms
-	id=data.addnode()
-	data.nodes[id][OsmData.LON]=pi.lon
-	data.nodes[id][OsmData.LAT]=pi.lat
-	data.nodes[id][OsmData.TAG]={}
+	id,_=osmcmd.makeNodeFromPoint(data,wp1+(wp2-wp1)*ms)
 	data.ways[wayid][OsmData.ACTION]=OsmData.MODIFY
 	data.ways[wayid][OsmData.REF].insert(mi+1,id)
 	return id
@@ -62,11 +58,7 @@ def swtw(data,wcid,wuid):
 		return None
 
 	pc1,pc2 = (wcpts[1],wcpts[0]) if mf else (wcpts[-2],wcpts[-1])
-	pi=pc1+(pc2-pc1)*ml
-	id=data.addnode()
-	data.nodes[id][OsmData.LON]=pi.lon
-	data.nodes[id][OsmData.LAT]=pi.lat
-	data.nodes[id][OsmData.TAG]={}
+	id,_=osmcmd.makeNodeFromPoint(data,pc1+(pc2-pc1)*ml)
 	data.ways[wuid][OsmData.ACTION]=OsmData.MODIFY
 	data.ways[wuid][OsmData.REF].insert(mi+1,id)
 	return id

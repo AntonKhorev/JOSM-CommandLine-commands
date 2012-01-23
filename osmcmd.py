@@ -40,6 +40,13 @@ def makePointsFromWay(way,data):
 		data.nodes[id] for id in way[OsmData.REF]
 	)]
 
+# TODO put to Data class
+def makeNodeFromPoint(data,pt):
+	id=data.addnode()
+	data.nodes[id][OsmData.LON]=pt.lon
+	data.nodes[id][OsmData.LAT]=pt.lat
+	return id,data.nodes[id]
+
 def fail(msg):
 	resultdata=Data()
 	resultdata.write(msg)

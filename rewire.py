@@ -65,10 +65,7 @@ def rewireWay(data,rewireid,fromid,toroadid,tosidewalkid):
 		if ls>lr:
 			continue
 		# add new node at intersection w/ sidewalk
-		rpt4=rpt1+(rpt2-rpt1)*ls
-		nid=data.addnode()
-		data.nodes[nid][OsmData.LON]=rpt4.lon
-		data.nodes[nid][OsmData.LAT]=rpt4.lat
+		nid,_=osmcmd.makeNodeFromPoint(data,rpt1+(rpt2-rpt1)*ls)
 		tsw[OsmData.ACTION]=OsmData.MODIFY
 		tsw[OsmData.REF].insert(tsi+1,nid)
 		rw[OsmData.ACTION]=OsmData.MODIFY
