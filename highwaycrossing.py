@@ -34,6 +34,8 @@ def main():
 						ls=segmentsCross(crpt1,crpt2,whpt1,whpt2)
 						if not ls: continue
 
+						n1=data.nodes[data.ways[whid][OsmData.REF][whi]]
+						n2=data.nodes[data.ways[whid][OsmData.REF][whi+1]]
 						counts['n']+=1
 						crl,whl=ls
 						newid,newnode=osmcmd.makeNodeFromPoint(data,crpt1+(crpt2-crpt1)*crl)
@@ -41,8 +43,6 @@ def main():
 						whway[OsmData.ACTION]=OsmData.MODIFY
 						whway[OsmData.REF].insert(whi+1,newid)
 
-						n1=data.nodes[data.ways[whid][OsmData.REF][whi]]
-						n2=data.nodes[data.ways[whid][OsmData.REF][whi+1]]
 						if whway[OsmData.TAG].get('highway')=='footway':
 							counts['j']+=1
 						elif (	n1[OsmData.TAG].get('highway')=='traffic_signals' or
