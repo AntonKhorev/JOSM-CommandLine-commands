@@ -69,6 +69,10 @@ def main():
 		candidates=[
 			crid for crid,crway in opdata.ways.items() if crway[OsmData.TAG].get('highway')=='footway'
 		]
+		if not candidates:
+			candidates=[
+				crid for crid,crway in opdata.ways.items() if not crway[OsmData.TAG]
+			]
 	else:
 		candidates=[
 			crid for crid in opdata.ways if all(
