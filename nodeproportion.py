@@ -13,9 +13,9 @@ def main():
 	pr=sys.argv[3]
 	if '|' in pr:
 		a,b=(float(t) for t in pr.split('|'))
-		w=b/(a+b)
+		w=a/(a+b)
 	else:
-		w=1-float(pr)
+		w=float(pr)
 
 	pm=p1+(p2-p1)*w
 
