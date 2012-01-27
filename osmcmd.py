@@ -89,6 +89,8 @@ class Point:
 		return Point('xy',self.x+vector.x,self.y+vector.y)
 	def __sub__(self,other):
 		return Vector(self.x-other.x,self.y-other.y)
+	def __eq__(self,other):
+		return self.x==other.x and self.y==other.y
 
 class Vector:
 	def __init__(self,x,y):

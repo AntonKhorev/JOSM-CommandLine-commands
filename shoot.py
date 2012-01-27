@@ -46,6 +46,8 @@ def swtw(data,wcid,wuid):
 	mf=None
 	for f,pc1,pc2 in ((True,wcpts[1],wcpts[0]),(False,wcpts[-2],wcpts[-1])):
 		for i,pu1,pu2 in ((i,wupts[i],wupts[i+1]) for i in range(len(wupts)-1)):
+			if pc2==pu1 or pc2==pu2:
+				continue
 			l,s=osmcmd.shoot(pc1,pc2,pu1,pu2)
 			if s<0 or s>1 or l<1:
 				continue
