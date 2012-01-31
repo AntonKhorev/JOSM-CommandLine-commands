@@ -89,7 +89,7 @@ def rewireRestriction(data,rewireid,fromid,toid):
 		if wid!=fromid or wrole not in ('from','to'):
 			continue
 		rel[OsmData.ACTION]=OsmData.MODIFY
-		rel[OsmData.REF][OsmData.WAYS][0]=(toid,wrole)
+		rel[OsmData.REF][OsmData.WAYS][i]=(toid,wrole)
 		nmembers+=1
 	return nmembers
 
