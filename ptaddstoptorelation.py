@@ -78,26 +78,34 @@ def determineInsertPosition(data,rel,stopid):
 def main():
 	data=osmcmd.readData()
 	nrdata=osmcmd.readData()
-	relid,rel=next(iter(nrdata.relations.items()))
+	data.mergedata(nrdata)
+	relid=next(iter(nrdata.relations))
+	rel=data.relations[relid]
 
 	if rel[OsmData.TAG].get('type')=='public_transport' and rel[OsmData.TAG].get('public_transport')=='stop_area':
 		n=0
-		for id,node in nrdata.nodes.items():
+		for id in nrdata.nodes:
+			node=data.nodes[id]
 			if node[OsmData.TAG].get('public_transport')=='stop_position':
 				rel[OsmData.REF][OsmData.NODES].append((id,'stop'))
-				n+=1
 			elif node[OsmData.TAG].get('public_transport')=='platform':
 				rel[OsmData.REF][OsmData.NODES].append((id,'platform'))
-				n+=1
+			else:
+				continue
+			n+=1
+			if 'name' in rel[OsmData.TAG] and 'name' not in node[OsmData.TAG]:
+				node[OsmData.ACTION]=OsmData.MODIFY
+				node[OsmData.TAG]['name']=rel[OsmData.TAG]['name']
 		if n>0:
 			rel[OsmData.ACTION]=OsmData.MODIFY
-			nrdata.addcomment(str(n)+' stops/platforms added to stop area')
-			nrdata.write(sys.stdout)
+			data.addcomment(str(n)+' stops/platforms added to stop area')
+			data.write(sys.stdout)
 		else:
 			osmcmd.fail('WARNING: no stops/platforms added to stop area')
 	elif rel[OsmData.TAG].get('type')=='route':
 		ns=np=0
-		for id,node in nrdata.nodes.items():
+		for id in nrdata.nodes:
+			node=data.nodes[id]
 			if node[OsmData.TAG].get('public_transport')=='stop_position':
 				ns+=1
 				stopid=id
@@ -125,9 +133,9 @@ def main():
 				stopnode[OsmData.ACTION]=OsmData.MODIFY
 				stopnode[OsmData.TAG][transport]='yes'
 				stopnode[OsmData.TAG]['railway']='tram_stop'
-		nrdata.addcomment(reason)
-		#nrdata.write(sys.stdout)
-		writeHack(nrdata,sys.stdout)
+		data.addcomment(reason)
+		#data.write(sys.stdout)
+		writeHack(data,sys.stdout)
 	else:
 		osmcmd.fail('ERROR: unsupported relation type')
 
