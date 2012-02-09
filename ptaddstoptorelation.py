@@ -99,7 +99,8 @@ def main():
 		if n>0:
 			rel[OsmData.ACTION]=OsmData.MODIFY
 			data.addcomment(str(n)+' stops/platforms added to stop area')
-			data.write(sys.stdout)
+			#data.write(sys.stdout)
+			writeHack(data,sys.stdout)
 		else:
 			osmcmd.fail('WARNING: no stops/platforms added to stop area')
 	elif rel[OsmData.TAG].get('type')=='route':
