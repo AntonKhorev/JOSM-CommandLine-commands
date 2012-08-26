@@ -17,9 +17,13 @@ def main():
 		if stopid is None:
 			continue
 		n+=1
-		data.nodes[platformid][OsmData.ACTION]=OsmData.MODIFY
-		data.nodes[platformid][OsmData.TAG].update({'public_transport':'platform'})
-		data.nodes[stopid][OsmData.TAG].update({'public_transport':'stop_position'})
+		plnode=data.nodes[platformid]
+		stnode=data.nodes[stopid]
+		plnode[OsmData.ACTION]=OsmData.MODIFY
+		plnode[OsmData.TAG].update({'public_transport':'platform'})
+		stnode[OsmData.TAG].update({'public_transport':'stop_position'})
+		if 'name' not in stnode[OsmData.TAG] and 'name' in plnode[OsmData.TAG]:
+			stnode[OsmData.TAG]['name']=plnode[OsmData.TAG]['name']
 
 	if n>0:
 		data.addcomment(str(n)+' stops created')
