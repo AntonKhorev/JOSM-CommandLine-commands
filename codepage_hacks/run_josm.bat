@@ -1,2 +1,2 @@
 set PYTHONIOENCODING=utf-8
-java -jar "%PROGRAMFILES%/JOSM/josm-tested.jar"
+java -Xmx256M -jar "%PROGRAMFILES%/JOSM/josm-tested.jar"
