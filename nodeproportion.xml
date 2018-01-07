@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="NodeProportion" run="python nodeproportion.py {P1} {P2} {Proportion}">
+	<parameter required="true" type="point">
+		<name>P1</name>
+		<description>Start point</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>P2</name>
+		<description>End point</description>
+	</parameter>
+	<parameter required="true" type="string">
+		<name>Proportion</name>
+		<description>Proportion to put new node (ex: "1|2", "1/3")</description>
+		<value>1|2</value>
+	</parameter>
+</command>

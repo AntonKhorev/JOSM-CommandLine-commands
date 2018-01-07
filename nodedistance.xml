@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="NodeDistance" run="python nodedistance.py {P1} {P2} {Distance}">
+	<parameter required="true" type="point">
+		<name>P1</name>
+		<description>Start point</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>P2</name>
+		<description>End point</description>
+	</parameter>
+	<parameter required="true" type="length">
+		<name>Distance</name>
+		<description>Distaince from starting point</description>
+		<value>1</value>
+	</parameter>
+</command>

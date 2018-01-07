@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="HighwayCrossing" run="python highwaycrossing.py">
+	<parameter required="true" type="way" mininstances="2" maxinstances="0">
+		<name>Objects</name>
+		<description>One way for a crossing (possibly untagged) + ways it crosses (tagged)</description>
+	</parameter>
+</command>
