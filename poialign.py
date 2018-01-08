@@ -41,27 +41,38 @@ def main():
 		osmcmd.fail('ERROR: no way to align POIs')
 	if len(opdata.ways)>1:
 		osmcmd.fail('ERROR: too many way to align POIs')
-	wid=next(iter(opdata.ways))
-	waypts=osmcmd.makePointsFromWay(data.ways[wid],data)
+	buildingWayId=next(iter(opdata.ways))
+	buildingWay=data.ways[buildingWayId]
+	buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data)
+
+	def makeEntranceAndConnect(poiNodeId,entranceNodeId):
+		entranceNode=data.nodes[entranceNodeId]
+		if entranceNode[OsmData.TAG].get('entrance') is None:
+			if entranceNode.get(OsmData.ACTION)!=OsmData.CREATE:
+				entranceNode[OsmData.ACTION]=OsmData.MODIFY
+			entranceNode[OsmData.TAG]['entrance']=poiNode[OsmData.TAG]['entrance']
+		corridorWayId=data.addway()
+		corridorWay=data.ways[corridorWayId]
+		corridorWay[OsmData.REF]=[entranceNodeId,poiNodeId]
+		corridorWay[OsmData.TAG]['highway']='corridor'
+
 	for poiNodeId in opdata.nodes:
 		poiNode=data.nodes[poiNodeId]
 		fpt=osmcmd.makePointFromNode(poiNode)
-		wpt,wpi=getClosestPointOnWay(fpt,waypts)
+		wpt,wpi=getClosestPointOnWay(fpt,buildingWayPoints)
 		tpt=wpt+(fpt-wpt).dir()*osmcmd.Length(2,wpt)
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=tpt.lon
 		poiNode[OsmData.LAT]=tpt.lat
 		if poiNode[OsmData.TAG].get('entrance') is not None:
 			if len(wpi)==1:
-				entranceNodeId=data.ways[wid][OsmData.REF][wpi[0]]
-				entranceNode=data.nodes[entranceNodeId]
-				if entranceNode[OsmData.TAG].get('entrance') is None:
-					entranceNode[OsmData.ACTION]=OsmData.MODIFY
-					entranceNode[OsmData.TAG]['entrance']=poiNode[OsmData.TAG]['entrance']
-				corridorWayId=data.addway()
-				corridorWay=data.ways[corridorWayId]
-				corridorWay[OsmData.REF]=[entranceNodeId,poiNodeId]
-				corridorWay[OsmData.TAG]['highway']='corridor'
+				entranceNodeId=buildingWay[OsmData.REF][wpi[0]]
+				makeEntranceAndConnect(poiNodeId,entranceNodeId)
+			elif len(wpi)==2:
+				entranceNodeId,_=osmcmd.makeNodeFromPoint(data,wpt)
+				buildingWay[OsmData.ACTION]=OsmData.MODIFY
+				buildingWay[OsmData.REF].insert(wpi[1],entranceNodeId)
+				makeEntranceAndConnect(poiNodeId,entranceNodeId)
 			del poiNode[OsmData.TAG]['entrance']
 	data.write(sys.stdout)
 
