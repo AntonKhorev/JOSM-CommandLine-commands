@@ -22,12 +22,12 @@ def getClosestPointOnWay(fpt,waypts):
 	for wp1,wp2 in [(waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
 		fp1=fpt
 		dwp=wp2-wp1
-		fp2=fp1+osmcmd.Vector(-dwp.y,dwp.x) # fake point to make perpendicular line
+		fp2=fp1+osmcmd.Vector(-dwp.y,dwp.x).dir() # fake point to make perpendicular line
 		l,s=osmcmd.shoot(fp1,fp2,wp1,wp2)
 		if s<0 or s>1:
 			continue
-		if abs(l)<abs(ml):
-			ml=l
+		if abs(l)<ml:
+			ml=abs(l)
 			mp=wp1+(wp2-wp1)*s
 	return mp
 
@@ -45,7 +45,6 @@ def main():
 		wpt=getClosestPointOnWay(fpt,waypts)
 		tpt=wpt+(fpt-wpt).dir()*osmcmd.Length(2,wpt)
 		data.nodes[pid][OsmData.ACTION]=OsmData.MODIFY
-		#data.nodes[pid][OsmData.TAG]['fixme']='ALIGN ME!'
 		data.nodes[pid][OsmData.LON]=tpt.lon
 		data.nodes[pid][OsmData.LAT]=tpt.lat
 	data.write(sys.stdout)

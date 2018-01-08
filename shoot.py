@@ -17,7 +17,7 @@ def sntw(data,nodeid,wayid):
 	for i,wp1,wp2 in [(i,waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
 		np1=nodept
 		dwp=wp2-wp1
-		np2=np1+osmcmd.Vector(-dwp.y,dwp.x) # fake point to make perpendicular line
+		np2=np1+osmcmd.Vector(-dwp.y,dwp.x).dir() # fake point to make perpendicular line
 		l,s=osmcmd.shoot(np1,np2,wp1,wp2)
 		if s<0 or s>1:
 			continue
