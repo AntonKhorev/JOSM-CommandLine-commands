@@ -24,6 +24,7 @@ def solveLinEqns(m):
 	else:
 		return det0/det,det1/det
 
+# returns (displacement along pf1-pf2 line, displacement along pt1-pt2 line)
 def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
 	return solveLinEqns((
 		(pf2.x-pf1.x,pt1.x-pt2.x,pt1.x-pf1.x),
