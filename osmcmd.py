@@ -92,6 +92,9 @@ class Point:
 		return Vector(self.x-other.x,self.y-other.y)
 	def __eq__(self,other):
 		return self.x==other.x and self.y==other.y
+	# def sideOfSegment(self,p,q):
+	# 	s=self
+	# 	return math.sign((p.x*p.y+p.y*s.x+q.x*s.y)-(s.x*q.y+p.y*q.x+p.x*s.y))
 
 class Vector:
 	def __init__(self,x,y):
@@ -101,6 +104,8 @@ class Vector:
 		return Vector(self.x*scalar,self.y*scalar)
 	def dir(self):
 		return Direction(self)
+	def rot90(self):
+		return Vector(-self.y,self.x)
 
 class Direction:
 	def __init__(self,vector):
@@ -111,5 +116,12 @@ class Direction:
 		return Vector(self.x*length.value,self.y*length.value)
 
 class Length:
-	def __init__(self,meters,point):
-		self.value=meters/math.cos(math.radians(point.lat))
+	def __init__(self,metersOrVector,point=None):
+		if isinstance(metersOrVector,Vector):
+			vector=metersOrVector
+			self.value=math.sqrt(vector.x**2+vector.y**2)
+		else:
+			meters=metersOrVector
+			self.value=meters/math.cos(math.radians(point.lat))
+	def __lt__(self,other):
+		return self.value<other.value
