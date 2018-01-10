@@ -2,6 +2,6 @@
 <command version="3" name="PoiAlign" run="python poialign.py">
 	<parameter required="true" type="any" mininstances="2" maxinstances="0">
 		<name>Objects</name>
-		<description>One node for a POI + one way for a building / building wall</description>
+		<description>Nodes for POIs + optional connector ways + one way for a building / building wall</description>
 	</parameter>
 </command>
