@@ -43,6 +43,8 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 		newPoiPoint=entrancePoint+(poiPoint-entrancePoint).dir()*offsetLength
 		return newPoiPoint,entrancePoint,buildingWayIndices
 	# push mode
+	pusher0=None
+	pusher1=None
 	epsilon=1e-7
 	isClosedWay=buildingWayPoints[0]==buildingWayPoints[-1]
 	p=poiPoint
@@ -63,18 +65,42 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 			if s0>1 and s1<0 and osmcmd.Length(p-wp1).value<offsetLength.value-epsilon: # TODO don't use Length class here
 				p=pushByPoint(wp1)
 				isModified=True
+				pusher0=pusher1
+				pusher1=(i,)
 			if 0<=s1<=1 and l1*initialSides[i]<offsetLength.value-epsilon:
 				p=pushBySegment(s1,wp1,wp2)
 				isModified=True
+				pusher0=pusher1
+				pusher1=(i,i+1)
 		if not isClosedWay:
 			l0,s0=l1,s1
 			l1,s1=shootPoint(p,wp2,wp1)
 			if s0>1 and s1<0 and osmcmd.Length(p-wp1).value<offsetLength.value-epsilon:
 				p=pushByPoint(wp1)
 				isModified=True
+				pusher0=pusher1
+				pusher1=(i,)
 		if not isModified:
 			break
-	return p,None,None
+	if pusher1 is None:
+		return p,None,None
+	elif len(pusher1)==1:
+		return p,buildingWayPoints[pusher1[0]],pusher1
+	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1):
+		wp1=buildingWayPoints[i]
+		wp2=buildingWayPoints[i+1]
+		l,s=shootPoint(p,wp1,wp2)
+		ep=wp1+(wp2-wp1)*s
+		return p,ep,pusher1
+	elif len(pusher1)==2 and len(pusher0)==2:
+		if pusher1[1]==pusher0[0]:
+			pusher0,pusher1=pusher1,pusher0
+		if pusher0[1]==pusher1[0]:
+			return p,buildingWayPoints[pusher1[0]],(pusher1[0],)
+		else:
+			return p,None,None
+	else:
+		return p,None,None
 
 def main():
 	data=osmcmd.readData()
