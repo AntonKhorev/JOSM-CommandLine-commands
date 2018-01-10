@@ -91,6 +91,19 @@ class TestPoiAlign(unittest.TestCase):
 		self.assertAlmostEqual(wpt.x,0)
 		self.assertAlmostEqual(wpt.y,0)
 		self.assertEqual(wpi,(1,))
+	def testPushInsideAngleSide(self):
+		pt=osmcmd.Point('latlon',60,30)
+		len=osmcmd.Length(1,pt)
+		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
+			Pt(1,5),
+			[Pt(0,10),Pt(0,0),Pt(10,0)],
+			len
+		)
+		self.assertAlmostEqual(npt.x,2)
+		self.assertAlmostEqual(npt.y,5)
+		self.assertAlmostEqual(wpt.x,0)
+		self.assertAlmostEqual(wpt.y,5)
+		self.assertEqual(wpi,(0,1))
 	def testPullOutsideAngle(self):
 		pt=osmcmd.Point('latlon',60,30)
 		len=osmcmd.Length(1,pt)

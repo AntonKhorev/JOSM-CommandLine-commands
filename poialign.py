@@ -87,8 +87,8 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	elif len(pusher1)==1:
 		return p,buildingWayPoints[pusher1[0]],pusher1
 	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1):
-		wp1=buildingWayPoints[i]
-		wp2=buildingWayPoints[i+1]
+		wp1=buildingWayPoints[pusher1[0]]
+		wp2=buildingWayPoints[pusher1[1]]
 		l,s=shootPoint(p,wp1,wp2)
 		ep=wp1+(wp2-wp1)*s
 		return p,ep,pusher1
