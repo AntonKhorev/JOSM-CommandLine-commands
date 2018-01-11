@@ -172,7 +172,7 @@ def main():
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=newPoiPoint.lon
 		poiNode[OsmData.LAT]=newPoiPoint.lat
-		if poiNode[OsmData.TAG].get('entrance') is not None:
+		if poiNode[OsmData.TAG].get('entrance') is not None and entrancePoint is not None:
 			if len(buildingWayIndices)==1:
 				entranceNodeId=buildingWay[OsmData.REF][buildingWayIndices[0]]
 				makeEntranceAndConnect(poiNodeId,entranceNodeId)
