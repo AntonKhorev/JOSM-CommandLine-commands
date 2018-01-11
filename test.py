@@ -1,4 +1,5 @@
 import unittest
+import math
 import osmcmd
 import poialign
 
@@ -124,6 +125,28 @@ class TestPoiAlign(unittest.TestCase):
 		)
 		self.assertAlmostEqual(npt.x,2)
 		self.assertAlmostEqual(npt.y,2)
+	def testPushInsideAcuteAngle1(self):
+		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
+			Pt(1,0),
+			[Pt(10,5),Pt(0,0),Pt(10,-5)],
+			math.sqrt(5)
+		)
+		self.assertAlmostEqual(npt.x,5,places=3)
+		self.assertAlmostEqual(npt.y,0,places=3)
+		self.assertAlmostEqual(wpt.x,0,places=3)
+		self.assertAlmostEqual(wpt.y,0,places=3)
+		self.assertEqual(wpi,(1,))
+	def testPushInsideAcuteAngle2(self):
+		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
+			Pt(2,0),
+			[Pt(10,5),Pt(0,0),Pt(10,-5)],
+			math.sqrt(5)
+		)
+		self.assertAlmostEqual(npt.x,5,places=3)
+		self.assertAlmostEqual(npt.y,0,places=3)
+		self.assertAlmostEqual(wpt.x,0,places=3)
+		self.assertAlmostEqual(wpt.y,0,places=3)
+		self.assertEqual(wpi,(1,))
 
 if __name__=='__main__':
         unittest.main()

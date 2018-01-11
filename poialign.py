@@ -51,11 +51,17 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
 		return wp+(p-wp).dir(offsetLength)
-	def pushBySegment(s,wp1,wp2): # invalidates l1,s1, but it shouldn't affect the result
+	def pushBySegment(s,wp1,wp2,initialSide): # invalidates l1,s1, but it shouldn't affect the result
 		ep=wp1+(wp2-wp1)*s
-		return ep+(p-ep).dir(offsetLength)
+		nv=(wp2-wp1).rot90().dir(-initialSide*offsetLength)
+		return ep+nv
 	for nIterations in range(10):
 		isModified=False
+		def recordPush(pusher):
+			nonlocal isModified,pusher0,pusher1
+			isModified=True
+			pusher0=pusher1
+			pusher1=pusher
 		if isClosedWay:
 			l1,s1=shootPoint(p,buildingWayPoints[-2],buildingWayPoints[-1])
 		else:
@@ -65,22 +71,16 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 			l1,s1=shootPoint(p,wp1,wp2)
 			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
-				isModified=True
-				pusher0=pusher1
-				pusher1=(i,)
+				recordPush((i,))
 			if 0<=s1<=1 and l1*initialSides[i]<offsetLength-epsilon:
-				p=pushBySegment(s1,wp1,wp2)
-				isModified=True
-				pusher0=pusher1
-				pusher1=(i,i+1)
+				p=pushBySegment(s1,wp1,wp2,initialSides[i])
+				recordPush((i,i+1))
 		if not isClosedWay:
 			l0,s0=l1,s1
 			l1,s1=shootPoint(p,wp2,wp1)
 			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
-				isModified=True
-				pusher0=pusher1
-				pusher1=(i,)
+				recordPush((i,))
 		if not isModified:
 			break
 	if pusher1 is None:
