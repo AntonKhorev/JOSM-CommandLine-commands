@@ -133,9 +133,36 @@ def main():
 		corridorWay[OsmData.TAG]['highway']='corridor'
 
 	for poiNodeId in opdata.nodes:
-		buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data) # get points again in case the way was altered
 		poiNode=data.nodes[poiNodeId]
 		poiPoint=osmcmd.makePointFromNode(poiNode)
+		buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data) # get points again in case the way was altered
+		buildingWayNodeIds=buildingWay[OsmData.REF]
+		isBuildingWayClosed=buildingWayNodeIds[0]==buildingWayNodeIds[-1]
+		def getBuildingSegmentsAroundIndex(j):
+			if 0<j<len(buildingWayNodeIds)-1:
+				return buildingWayPoints[j-1:j+2]
+			elif isBuildingWayClosed:
+				return [buildingWayPoints[-2],buildingWayPoints[0],buildingWayPoints[1]]
+			elif j==0:
+				return buildingWayPoints[:2]
+			else:
+				return buildingWayPoints[-2:]
+		connectedToBuildingIndices=set()
+		def getPossibleBuildingConnections():
+			for cwid in connectorWayIds:
+				connectorWayNodeIds=data.ways[cwid][OsmData.REF]
+				for i,cwid in enumerate(connectorWayNodeIds):
+					if cwid==poiNodeId:
+						for j,bwid in enumerate(buildingWayNodeIds):
+							if (not isBuildingWayClosed or j>0) and (
+								(i>0 and bwid==connectorWayNodeIds[i-1]) or
+								(i<len(connectorWayNodeIds)-1 and bwid==connectorWayNodeIds[i+1])
+							):
+								connectedToBuildingIndices.add(j)
+		getPossibleBuildingConnections()
+		if len(connectedToBuildingIndices)==1:
+			for j in connectedToBuildingIndices:
+				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
 		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,osmcmd.Length(2,poiPoint))
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=newPoiPoint.lon
