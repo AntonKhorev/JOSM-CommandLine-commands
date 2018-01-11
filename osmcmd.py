@@ -92,6 +92,8 @@ class Point:
 		return Vector(self.x-other.x,self.y-other.y)
 	def __eq__(self,other):
 		return self.x==other.x and self.y==other.y
+	def __str__(self):
+		return '('+str(self.x)+','+str(self.y)+')'
 	# def sideOfSegment(self,p,q):
 	# 	s=self
 	# 	return math.sign((p.x*p.y+p.y*s.x+q.x*s.y)-(s.x*q.y+p.y*q.x+p.x*s.y))
@@ -104,6 +106,9 @@ class Vector:
 		return Vector(self.x*scalar,self.y*scalar)
 	def dir(self):
 		return Direction(self)
+	def unit(self):
+		len=math.sqrt(self.x**2+self.y**2)
+		return Vector(self.x/len,self.y/len)
 	def rot90(self):
 		return Vector(-self.y,self.x)
 

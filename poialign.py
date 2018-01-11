@@ -6,6 +6,8 @@ import math
 import OsmData
 import osmcmd
 
+epsilon=1e-7
+
 def shootPoint(fp1,wp1,wp2):
 	fp2=fp1+(wp2-wp1).rot90().dir() # fake point to make perpendicular line
 	return osmcmd.shoot(fp1,fp2,wp1,wp2)
@@ -45,7 +47,6 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	# push mode
 	pusher0=None
 	pusher1=None
-	epsilon=1e-7
 	isClosedWay=buildingWayPoints[0]==buildingWayPoints[-1]
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
@@ -162,11 +163,19 @@ def main():
 		getPossibleBuildingConnections()
 		if len(connectedToBuildingIndices)==1:
 			for j in connectedToBuildingIndices:
+				connectionPoint=osmcmd.makePointFromNode(data.nodes[buildingWayNodeIds[j]])
+				#q=poiPoint ###
+				#qq=buildingWayPoints ###
+				poiPoint=connectionPoint+(poiPoint-connectionPoint).unit()*0.01
 				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
+				#data.addcomment('!!! '+str(j)+' '+str(q)+' '+str(poiPoint)+' '+str(connectionPoint)) ###
+				#data.addcomment('!!! '+str(qq)+' '+str(buildingWayPoints)) ###
 		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,osmcmd.Length(2,poiPoint))
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=newPoiPoint.lon
 		poiNode[OsmData.LAT]=newPoiPoint.lat
+		# poiNode[OsmData.LON]=poiPoint.lon ###
+		# poiNode[OsmData.LAT]=poiPoint.lat ###
 		if poiNode[OsmData.TAG].get('entrance') is not None:
 			if len(buildingWayIndices)==1:
 				entranceNodeId=buildingWay[OsmData.REF][buildingWayIndices[0]]
