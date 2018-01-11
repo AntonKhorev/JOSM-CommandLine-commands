@@ -7,6 +7,8 @@ import OsmData
 import osmcmd
 
 epsilon=1e-7
+maxIterations=1000
+delta=10/maxIterations
 
 def shootPoint(fp1,wp1,wp2):
 	fp2=fp1+(wp2-wp1).rot90().dir() # fake point to make perpendicular line
@@ -50,12 +52,11 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	isClosedWay=buildingWayPoints[0]==buildingWayPoints[-1]
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
-		return wp+(p-wp).dir(offsetLength)
+		return p+(p-wp).dir(offsetLength*delta)
 	def pushBySegment(s,wp1,wp2,initialSide): # invalidates l1,s1, but it shouldn't affect the result
-		ep=wp1+(wp2-wp1)*s
-		nv=(wp2-wp1).rot90().dir(-initialSide*offsetLength)
-		return ep+nv
-	for nIterations in range(10):
+		nv=(wp2-wp1).rot90().dir(-initialSide*offsetLength*delta)
+		return p+nv
+	for nIterations in range(maxIterations):
 		isModified=False
 		def recordPush(pusher):
 			nonlocal isModified,pusher0,pusher1
@@ -87,7 +88,7 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 		return p,None,None
 	elif len(pusher1)==1:
 		return p,buildingWayPoints[pusher1[0]],pusher1
-	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1):
+	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1 or pusher0==pusher1):
 		wp1=buildingWayPoints[pusher1[0]]
 		wp2=buildingWayPoints[pusher1[1]]
 		l,s=shootPoint(p,wp1,wp2)
@@ -136,6 +137,7 @@ def main():
 	for poiNodeId in opdata.nodes:
 		poiNode=data.nodes[poiNodeId]
 		poiPoint=osmcmd.makePointFromNode(poiNode)
+		offsetLength=poiPoint.lengthFromMeters(2)
 		buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data) # get points again in case the way was altered
 		buildingWayNodeIds=buildingWay[OsmData.REF]
 		isBuildingWayClosed=buildingWayNodeIds[0]==buildingWayNodeIds[-1]
@@ -164,18 +166,12 @@ def main():
 		if len(connectedToBuildingIndices)==1:
 			for j in connectedToBuildingIndices:
 				connectionPoint=osmcmd.makePointFromNode(data.nodes[buildingWayNodeIds[j]])
-				#q=poiPoint ###
-				#qq=buildingWayPoints ###
-				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(0.01)
+				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(offsetLength*delta)
 				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
-				#data.addcomment('!!! '+str(j)+' '+str(q)+' '+str(poiPoint)+' '+str(connectionPoint)) ###
-				#data.addcomment('!!! '+str(qq)+' '+str(buildingWayPoints)) ###
-		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,poiPoint.lengthFromMeters(2))
+		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength)
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=newPoiPoint.lon
 		poiNode[OsmData.LAT]=newPoiPoint.lat
-		# poiNode[OsmData.LON]=poiPoint.lon ###
-		# poiNode[OsmData.LAT]=poiPoint.lat ###
 		if poiNode[OsmData.TAG].get('entrance') is not None:
 			if len(buildingWayIndices)==1:
 				entranceNodeId=buildingWay[OsmData.REF][buildingWayIndices[0]]

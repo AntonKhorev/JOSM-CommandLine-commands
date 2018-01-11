@@ -147,6 +147,17 @@ class TestPoiAlign(unittest.TestCase):
 		self.assertAlmostEqual(wpt.x,0,places=3)
 		self.assertAlmostEqual(wpt.y,0,places=3)
 		self.assertEqual(wpi,(1,))
+	def testPushInsideBluntAngle(self):
+		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
+			Pt(1,0),
+			[Pt(10,50),Pt(0,0),Pt(10,-50)],
+			10
+		)
+		self.assertGreater(npt.x,10)
+		self.assertAlmostEqual(npt.y,0,places=3)
+		self.assertAlmostEqual(wpt.x,0,places=3)
+		self.assertAlmostEqual(wpt.y,0,places=3)
+		self.assertEqual(wpi,(1,))
 
 if __name__=='__main__':
         unittest.main()
