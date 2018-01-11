@@ -13,7 +13,7 @@ def main():
 	p2=osmcmd.readPoint(2)
 	l=osmcmd.readLength(3,p1)
 
-	pm=p1+(p2-p1).dir()*l
+	pm=p1+(p2-p1).dir(l)
 
 	td=osmcmd.Data()
 	td.addNode(pm)

@@ -40,9 +40,9 @@ def getClosestPointOnWay(fpt,waypts):
 
 def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	entrancePoint,buildingWayIndices,initialSides=getClosestPointOnWay(poiPoint,buildingWayPoints)
-	if offsetLength<osmcmd.Length(poiPoint-entrancePoint):
+	if offsetLength<(poiPoint-entrancePoint).length:
 		# pull mode
-		newPoiPoint=entrancePoint+(poiPoint-entrancePoint).dir()*offsetLength
+		newPoiPoint=entrancePoint+(poiPoint-entrancePoint).dir(offsetLength)
 		return newPoiPoint,entrancePoint,buildingWayIndices
 	# push mode
 	pusher0=None
@@ -50,10 +50,10 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	isClosedWay=buildingWayPoints[0]==buildingWayPoints[-1]
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
-		return wp+(p-wp).dir()*offsetLength
+		return wp+(p-wp).dir(offsetLength)
 	def pushBySegment(s,wp1,wp2): # invalidates l1,s1, but it shouldn't affect the result
 		ep=wp1+(wp2-wp1)*s
-		return ep+(p-ep).dir()*offsetLength
+		return ep+(p-ep).dir(offsetLength)
 	for nIterations in range(10):
 		isModified=False
 		if isClosedWay:
@@ -63,12 +63,12 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 		for i,wp1,wp2 in [(i,buildingWayPoints[i],buildingWayPoints[i+1]) for i in range(len(buildingWayPoints)-1)]:
 			l0,s0=l1,s1
 			l1,s1=shootPoint(p,wp1,wp2)
-			if s0>1 and s1<0 and osmcmd.Length(p-wp1).value<offsetLength.value-epsilon: # TODO don't use Length class here
+			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
 				isModified=True
 				pusher0=pusher1
 				pusher1=(i,)
-			if 0<=s1<=1 and l1*initialSides[i]<offsetLength.value-epsilon:
+			if 0<=s1<=1 and l1*initialSides[i]<offsetLength-epsilon:
 				p=pushBySegment(s1,wp1,wp2)
 				isModified=True
 				pusher0=pusher1
@@ -76,7 +76,7 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 		if not isClosedWay:
 			l0,s0=l1,s1
 			l1,s1=shootPoint(p,wp2,wp1)
-			if s0>1 and s1<0 and osmcmd.Length(p-wp1).value<offsetLength.value-epsilon:
+			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
 				isModified=True
 				pusher0=pusher1
@@ -166,11 +166,11 @@ def main():
 				connectionPoint=osmcmd.makePointFromNode(data.nodes[buildingWayNodeIds[j]])
 				#q=poiPoint ###
 				#qq=buildingWayPoints ###
-				poiPoint=connectionPoint+(poiPoint-connectionPoint).unit()*0.01
+				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(0.01)
 				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
 				#data.addcomment('!!! '+str(j)+' '+str(q)+' '+str(poiPoint)+' '+str(connectionPoint)) ###
 				#data.addcomment('!!! '+str(qq)+' '+str(buildingWayPoints)) ###
-		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,osmcmd.Length(2,poiPoint))
+		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,poiPoint.lengthFromMeters(2))
 		poiNode[OsmData.ACTION]=OsmData.MODIFY
 		poiNode[OsmData.LON]=newPoiPoint.lon
 		poiNode[OsmData.LAT]=newPoiPoint.lat

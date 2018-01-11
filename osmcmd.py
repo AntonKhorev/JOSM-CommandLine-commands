@@ -8,7 +8,7 @@ def readPoint(n):
 	return Point('lonlat',lon,lat)
 
 def readLength(n,point):
-	return Length(float(sys.argv[n]),point)
+	return point.lengthFromMeters(float(sys.argv[n]))
 
 def readData():
 	data=OsmData.OsmData()
@@ -94,6 +94,8 @@ class Point:
 		return self.x==other.x and self.y==other.y
 	def __str__(self):
 		return '('+str(self.x)+','+str(self.y)+')'
+	def lengthFromMeters(self,meters):
+		return meters/math.cos(math.radians(self.lat))
 	# def sideOfSegment(self,p,q):
 	# 	s=self
 	# 	return math.sign((p.x*p.y+p.y*s.x+q.x*s.y)-(s.x*q.y+p.y*q.x+p.x*s.y))
@@ -102,31 +104,16 @@ class Vector:
 	def __init__(self,x,y):
 		self.x=x
 		self.y=y
+	def __getattr__(self,name):
+		if name=='length':
+			self.length=math.sqrt(self.x**2+self.y**2)
+			return getattr(self,name)
+		else:
+			raise AttributeError('invalid vector attr "'+name+'"')
 	def __mul__(self,scalar):
 		return Vector(self.x*scalar,self.y*scalar)
-	def dir(self):
-		return Direction(self)
-	def unit(self):
-		len=math.sqrt(self.x**2+self.y**2)
-		return Vector(self.x/len,self.y/len)
+	def dir(self,length=1): # used to return Direction class, now returns Vector of specified length with the same direction
+		s=length/self.length
+		return Vector(self.x*s,self.y*s)
 	def rot90(self):
 		return Vector(-self.y,self.x)
-
-class Direction:
-	def __init__(self,vector):
-		len=math.sqrt(vector.x**2+vector.y**2)
-		self.x=vector.x/len
-		self.y=vector.y/len
-	def __mul__(self,length):
-		return Vector(self.x*length.value,self.y*length.value)
-
-class Length:
-	def __init__(self,metersOrVector,point=None):
-		if isinstance(metersOrVector,Vector):
-			vector=metersOrVector
-			self.value=math.sqrt(vector.x**2+vector.y**2)
-		else:
-			meters=metersOrVector
-			self.value=meters/math.cos(math.radians(point.lat))
-	def __lt__(self,other):
-		return self.value<other.value
