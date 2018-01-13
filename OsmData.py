@@ -26,7 +26,11 @@
 #       MA 02110-1301, USA.
 
 import xml.sax
+import xml.sax.saxutils
 import copy
+
+def quoteattr(attr):
+    return xml.sax.saxutils.quoteattr(str(attr))
 
 LON = 1
 LAT = 2
@@ -138,7 +142,7 @@ class OsmData(xml.sax.ContentHandler):
             targetStream.write("<!--" + text + "-->\n")
         targetStream.write("</osm>")
     def xmlnode(self, node):
-        string = ("<node id='" + str(node[0]) + "' ");
+        string = ("<node id=" + quoteattr(node[0]) + " ");
         tags = {}
         for attr in node[1].items():
             if attr[0] == ACTION:
@@ -147,29 +151,29 @@ class OsmData(xml.sax.ContentHandler):
                 elif attr[1] == DELETE:
                     string += ("action='delete' ");
             elif attr[0] == VERSION:
-                string += ("version='" + str(attr[1]) + "' ")
+                string += ("version=" + quoteattr(attr[1]) + " ")
             elif attr[0] == CHANGESET:
-                string += ("changeset='" + str(attr[1]) + "' ")
+                string += ("changeset=" + quoteattr(attr[1]) + " ")
             elif attr[0] == UID:
-                string += ("uid='" + str(attr[1]) + "' ")
+                string += ("uid=" + quoteattr(attr[1]) + " ")
             elif attr[0] == LAT:
-                string += ("lat='" + str(attr[1]) + "' ")
+                string += ("lat=" + quoteattr(attr[1]) + " ")
             elif attr[0] == LON:
-                string += ("lon='" + str(attr[1]) + "' ")
+                string += ("lon=" + quoteattr(attr[1]) + " ")
             elif attr[0] == USER:
-                string += ("user='" + str(attr[1]) + "' ")
+                string += ("user=" + quoteattr(attr[1]) + " ")
             elif attr[0] == "timestamp" or attr[0] == "visible":
-                string += (attr[0] + "='" + str(attr[1]) + "' ")
+                string += (attr[0] + "=" + quoteattr(attr[1]) + " ")
         if len(node[1][TAG]) > 0:
             string += (">\n")
             for tag in node[1][TAG].items():
-                string += ("<tag k='" + str(tag[0]) + "' v='" + str(tag[1]) + "' />\n")
+                string += ("<tag k=" + quoteattr(tag[0]) + " v=" + quoteattr(tag[1]) + " />\n")
             string += ("</node>\n")
         else:
             string += ("/>\n")
         return string
     def xmlway(self, way):
-        string = ("<way id='" + str(way[0]) + "' ");
+        string = ("<way id=" + quoteattr(way[0]) + " ");
         tags = {}
         for attr in way[1].items():
             if attr[0] == ACTION:
@@ -178,24 +182,24 @@ class OsmData(xml.sax.ContentHandler):
                 elif attr[1] == DELETE:
                     string += ("action='delete' ");
             elif attr[0] == VERSION:
-                string += ("version='" + str(attr[1]) + "' ")
+                string += ("version=" + quoteattr(attr[1]) + " ")
             elif attr[0] == CHANGESET:
-                string += ("changeset='" + str(attr[1]) + "' ")
+                string += ("changeset=" + quoteattr(attr[1]) + " ")
             elif attr[0] == UID:
-                string += ("uid='" + str(attr[1]) + "' ")
+                string += ("uid=" + quoteattr(attr[1]) + " ")
             elif attr[0] == USER:
-                string += ("user='" + str(attr[1]) + "' ")
+                string += ("user=" + quoteattr(attr[1]) + " ")
             elif attr[0] == "timestamp" or attr[0] == "visible":
-                string += (attr[0] + "='" + str(attr[1]) + "' ")
+                string += (attr[0] + "=" + quoteattr(attr[1]) + " ")
         string += (">\n")
         for ref in way[1][REF]:
-            string += ("<nd ref='" + str(ref) + "' />\n")
+            string += ("<nd ref=" + quoteattr(ref) + " />\n")
         for tag in way[1][TAG].items():
-            string += ("<tag k='" + str(tag[0]) + "' v='" + str(tag[1]) + "' />\n")
+            string += ("<tag k=" + quoteattr(tag[0]) + " v=" + quoteattr(tag[1]) + " />\n")
         string += ("</way>\n")
         return string
     def xmlrelation(self, relation):
-        string = ("<relation id='" + str(relation[0]) + "' ");
+        string = ("<relation id=" + quoteattr(relation[0]) + " ");
         tags = {}
         for attr in relation[1].items():
             if attr[0] == ACTION:
@@ -204,24 +208,24 @@ class OsmData(xml.sax.ContentHandler):
                 elif attr[1] == DELETE:
                     string += ("action='delete' ");
             elif attr[0] == VERSION:
-                string += ("version='" + str(attr[1]) + "' ")
+                string += ("version=" + quoteattr(attr[1]) + " ")
             elif attr[0] == CHANGESET:
-                string += ("changeset='" + str(attr[1]) + "' ")
+                string += ("changeset=" + quoteattr(attr[1]) + " ")
             elif attr[0] == UID:
-                string += ("uid='" + str(attr[1]) + "' ")
+                string += ("uid=" + quoteattr(attr[1]) + " ")
             elif attr[0] == USER:
-                string += ("user='" + str(attr[1]) + "' ")
+                string += ("user=" + quoteattr(attr[1]) + " ")
             elif attr[0] == "timestamp" or attr[0] == "visible":
-                string += (attr[0] + "='" + str(attr[1]) + "' ")
+                string += (attr[0] + "=" + quoteattr(attr[1]) + " ")
         string += (">\n")
         for ref in relation[1][REF][NODES]:
-            string += ("<member type='node' ref='" + str(ref[0]) + "' role='" + str(ref[1]) + "' />\n")
+            string += ("<member type='node' ref=" + quoteattr(ref[0]) + " role=" + quoteattr(ref[1]) + " />\n")
         for ref in relation[1][REF][WAYS]:
-            string += ("<member type='way' ref='" + str(ref[0]) + "' role='" + str(ref[1]) + "' />\n")
+            string += ("<member type='way' ref=" + quoteattr(ref[0]) + " role=" + quoteattr(ref[1]) + " />\n")
         for ref in relation[1][REF][RELATIONS]:
-            string += ("<member type='relation' ref='" + str(ref[0]) + "' role='" + str(ref[1]) + "' />\n")
+            string += ("<member type='relation' ref=" + quoteattr(ref[0]) + " role=" + quoteattr(ref[1]) + " />\n")
         for tag in relation[1][TAG].items():
-            string += ("<tag k='" + str(tag[0]) + "' v='" + str(tag[1]) + "' />\n")
+            string += ("<tag k=" + quoteattr(tag[0]) + " v=" + quoteattr(tag[1]) + " />\n")
         string += ("</relation>\n")
         return string
     def startElement(self, tag, attributes):
