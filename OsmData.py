@@ -143,7 +143,6 @@ class OsmData(xml.sax.ContentHandler):
         targetStream.write("</osm>")
     def xmlnode(self, node):
         string = ("<node id=" + quoteattr(node[0]) + " ");
-        tags = {}
         for attr in node[1].items():
             if attr[0] == ACTION:
                 if attr[1] == MODIFY:
@@ -174,7 +173,6 @@ class OsmData(xml.sax.ContentHandler):
         return string
     def xmlway(self, way):
         string = ("<way id=" + quoteattr(way[0]) + " ");
-        tags = {}
         for attr in way[1].items():
             if attr[0] == ACTION:
                 if attr[1] == MODIFY:
@@ -200,7 +198,6 @@ class OsmData(xml.sax.ContentHandler):
         return string
     def xmlrelation(self, relation):
         string = ("<relation id=" + quoteattr(relation[0]) + " ");
-        tags = {}
         for attr in relation[1].items():
             if attr[0] == ACTION:
                 if attr[1] == MODIFY:
