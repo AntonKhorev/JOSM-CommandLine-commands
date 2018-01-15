@@ -3,10 +3,6 @@ import math
 import projections
 import OsmData
 
-def readPoint(n):
-	lon,lat=(float(c) for c in sys.argv[n].split(','))
-	return Point('lonlat',lon,lat)
-
 def readLength(n,point):
 	return point.lengthFromMeters(float(sys.argv[n]))
 
@@ -77,6 +73,10 @@ class Point:
 			self.y=b
 		else:
 			raise Exception('invalid point init method')
+	@classmethod
+	def fromArgv(cls,n):
+		lon,lat=(float(c) for c in sys.argv[n].split(','))
+		return cls('lonlat',lon,lat)
 	def __getattr__(self,name):
 		if name=='x' or name=='y':
 			self.x,self.y=projections.from4326((self.lon,self.lat),"EPSG:3857")

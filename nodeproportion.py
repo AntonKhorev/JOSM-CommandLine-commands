@@ -8,8 +8,8 @@ def main():
 	if len(sys.argv)!=4:
 		return 0
 
-	p1=osmcmd.readPoint(1)
-	p2=osmcmd.readPoint(2)
+	p1=osmcmd.Point.fromArgv(1)
+	p2=osmcmd.Point.fromArgv(2)
 	pr=sys.argv[3]
 	if '|' in pr:
 		a,b=(float(t) for t in pr.split('|'))
