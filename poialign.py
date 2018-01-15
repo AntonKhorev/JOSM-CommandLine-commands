@@ -136,7 +136,7 @@ def main():
 
 	for poiNodeId in opdata.nodes:
 		poiNode=data.nodes[poiNodeId]
-		poiPoint=osmcmd.makePointFromNode(poiNode)
+		poiPoint=osmcmd.Point.fromNode(poiNode)
 		offsetLength=poiPoint.lengthFromMeters(2)
 		buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data) # get points again in case the way was altered
 		buildingWayNodeIds=buildingWay[OsmData.REF]
@@ -165,7 +165,7 @@ def main():
 		getPossibleBuildingConnections()
 		if len(connectedToBuildingIndices)==1:
 			for j in connectedToBuildingIndices:
-				connectionPoint=osmcmd.makePointFromNode(data.nodes[buildingWayNodeIds[j]])
+				connectionPoint=osmcmd.Point.fromNode(data.nodes[buildingWayNodeIds[j]])
 				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(offsetLength*delta)
 				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
 		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength)

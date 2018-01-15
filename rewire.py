@@ -27,14 +27,14 @@ def rewireWay(data,rewireid,fromid,toroadid,tosidewalkid):
 		else:
 			continue # TODO
 
-		rpt1=osmcmd.makePointFromNode(data.nodes[rid1])
-		rpt2=osmcmd.makePointFromNode(data.nodes[rid2])
+		rpt1=osmcmd.Point.fromNode(data.nodes[rid1])
+		rpt2=osmcmd.Point.fromNode(data.nodes[rid2])
 		def shootToWay(tw):
 			return functools.reduce(min,
 				((l,ti) for ti,(l,s) in (
 					(i,osmcmd.shoot(rpt1,rpt2,
-						osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i]]),
-						osmcmd.makePointFromNode(data.nodes[tw[OsmData.REF][i+1]])
+						osmcmd.Point.fromNode(data.nodes[tw[OsmData.REF][i]]),
+						osmcmd.Point.fromNode(data.nodes[tw[OsmData.REF][i+1]])
 					)) for i in range(len(tw[OsmData.REF])-1)
 				) if s>0 and s<1 and l>0),
 				(float('inf'),None)

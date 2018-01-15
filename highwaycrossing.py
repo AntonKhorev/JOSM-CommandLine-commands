@@ -8,7 +8,7 @@ import osmcmd
 def main():
 	def enumWayPtPairs(way):
 		refs=way[OsmData.REF]
-		return ((i,osmcmd.makePointFromNode(data.nodes[refs[i]]),osmcmd.makePointFromNode(data.nodes[refs[i+1]])) for i in range(len(refs)-1))
+		return ((i,osmcmd.Point.fromNode(data.nodes[refs[i]]),osmcmd.Point.fromNode(data.nodes[refs[i+1]])) for i in range(len(refs)-1))
 	def segmentsCross(pa1,pa2,pb1,pb2):
 		a,b=osmcmd.shoot(pa1,pa2,pb1,pb2)
 		return (a,b) if a>0 and a<1 and b>0 and b<1 else None

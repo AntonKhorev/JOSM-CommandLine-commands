@@ -28,10 +28,6 @@ def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
 	))
 
 # TODO put to Data class
-def makePointFromNode(node):
-	return Point.fromLatLon(node[OsmData.LAT],node[OsmData.LON])
-
-# TODO put to Data class
 def makePointsFromWay(way,data):
 	return [Point.fromLatLon(waynode[OsmData.LAT],waynode[OsmData.LON]) for waynode in (
 		data.nodes[id] for id in way[OsmData.REF]
@@ -79,6 +75,9 @@ class Point:
 	def fromArgv(cls,n):
 		lon,lat=(float(c) for c in sys.argv[n].split(','))
 		return cls('lonlat',lon,lat)
+	@classmethod
+	def fromNode(cls,node):
+		return cls.fromLatLon(node[OsmData.LAT],node[OsmData.LON])
 	def __getattr__(self,name):
 		if name=='x' or name=='y':
 			self.x,self.y=projections.from4326((self.lon,self.lat),"EPSG:3857")

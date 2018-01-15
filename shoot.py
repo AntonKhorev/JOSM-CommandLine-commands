@@ -7,7 +7,7 @@ import OsmData
 
 def sntw(data,nodeid,wayid):
 	node=data.nodes[nodeid]
-	nodept=osmcmd.makePointFromNode(node)
+	nodept=osmcmd.Point.fromNode(node)
 	way=data.ways[wayid]
 	waypts=osmcmd.makePointsFromWay(way,data)
 
