@@ -29,11 +29,11 @@ def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
 
 # TODO put to Data class
 def makePointFromNode(node):
-	return Point('latlon',node[OsmData.LAT],node[OsmData.LON])
+	return Point.fromLatLon(node[OsmData.LAT],node[OsmData.LON])
 
 # TODO put to Data class
 def makePointsFromWay(way,data):
-	return [Point('latlon',waynode[OsmData.LAT],waynode[OsmData.LON]) for waynode in (
+	return [Point.fromLatLon(waynode[OsmData.LAT],waynode[OsmData.LON]) for waynode in (
 		data.nodes[id] for id in way[OsmData.REF]
 	)]
 
@@ -61,18 +61,20 @@ class Data:
 		self.odata.write(sys.stdout)
 
 class Point:
-	def __init__(self,method,a,b):
-		if method=='latlon':
-			self.lat=a
-			self.lon=b
-		elif method=='lonlat':
-			self.lon=a
-			self.lat=b
-		elif method=='xy':
-			self.x=a
-			self.y=b
-		else:
-			raise Exception('invalid point init method')
+	def __init__(self,x,y):
+		self.x=x
+		self.y=y
+	@classmethod
+	def fromLatLon(cls,lat,lon):
+		point=cls(0,0)
+		del point.x
+		del point.y
+		point.lat=lat
+		point.lon=lon
+		return point
+	@classmethod
+	def fromLonLat(cls,lon,lat):
+		return cls.fromLatLon(lat,lon)
 	@classmethod
 	def fromArgv(cls,n):
 		lon,lat=(float(c) for c in sys.argv[n].split(','))
@@ -87,7 +89,7 @@ class Point:
 		else:
 			raise AttributeError('invalid point attr "'+name+'"')
 	def __add__(self,vector):
-		return Point('xy',self.x+vector.x,self.y+vector.y)
+		return Point(self.x+vector.x,self.y+vector.y)
 	def __sub__(self,other):
 		return Vector(self.x-other.x,self.y-other.y)
 	def __eq__(self,other):

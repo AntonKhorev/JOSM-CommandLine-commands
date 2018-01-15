@@ -3,13 +3,12 @@ import math
 import osmcmd
 import poialign
 
-def Pt(x,y):
-	return osmcmd.Point('xy',x,y)
+Pt=osmcmd.Point
 
 class TestOsmCmd(unittest.TestCase):
 	def testNodeDistance(self):
-		p1=osmcmd.Point('latlon',59.929928003648804,30.39256987360226)
-		p2=osmcmd.Point('latlon',59.93093128613418,30.397014125548477)
+		p1=osmcmd.Point.fromLatLon(59.929928003648804,30.39256987360226)
+		p2=osmcmd.Point.fromLatLon(59.93093128613418,30.397014125548477)
 		len=p1.lengthFromMeters(20)
 		pr=p1+(p2-p1).dir(len)
 		self.assertAlmostEqual(pr.lat,59.9300018058)
