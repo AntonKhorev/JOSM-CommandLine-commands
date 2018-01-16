@@ -38,7 +38,7 @@ def main():
 						n2=data.nodes[data.ways[whid][OsmData.REF][whi+1]]
 						counts['n']+=1
 						crl,whl=ls
-						newid,newnode=osmcmd.makeNodeFromPoint(data,crpt1+(crpt2-crpt1)*crl)
+						newid,newnode=(crpt1+(crpt2-crpt1)*crl).makeNode(data)
 						crway[OsmData.REF].insert(cri+1,newid)
 						whway[OsmData.ACTION]=OsmData.MODIFY
 						whway[OsmData.REF].insert(whi+1,newid)

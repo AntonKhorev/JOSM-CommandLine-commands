@@ -169,15 +169,13 @@ def main():
 				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(offsetLength*delta)
 				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
 		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength)
-		poiNode[OsmData.ACTION]=OsmData.MODIFY
-		poiNode[OsmData.LON]=newPoiPoint.lon
-		poiNode[OsmData.LAT]=newPoiPoint.lat
+		newPoiPoint.setNode(poiNode)
 		if poiNode[OsmData.TAG].get('entrance') is not None and entrancePoint is not None:
 			if len(buildingWayIndices)==1:
 				entranceNodeId=buildingWay[OsmData.REF][buildingWayIndices[0]]
 				makeEntranceAndConnect(poiNodeId,entranceNodeId)
 			elif len(buildingWayIndices)==2:
-				entranceNodeId,_=osmcmd.makeNodeFromPoint(data,entrancePoint)
+				entranceNodeId,_=entrancePoint.makeNode(data)
 				buildingWay[OsmData.ACTION]=OsmData.MODIFY
 				buildingWay[OsmData.REF].insert(buildingWayIndices[1],entranceNodeId)
 				makeEntranceAndConnect(poiNodeId,entranceNodeId)
