@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<command version="3" name="Rewire" run="python rewire.py">
+<command version="3" name="HighwayRewire" run="python highwayrewire.py">
 	<parameter required="true" type="any" mininstances="1" maxinstances="0">
 		<name>Objects</name>
-		<description>What to rewire</description>
+		<description>What to rewire (usually one or more highway=service)</description>
 	</parameter>
 	<parameter required="true" type="way" maxinstances="0">
 		<name>WayFrom</name>
-		<description>Way to rewire from</description>
+		<description>Way to rewire from (usually a street)</description>
 	</parameter>
 	<parameter required="true" type="way" maxinstances="0">
 		<name>Objects</name>
-		<description>Ways (street + maybe sidewalk) to rewire to</description>
+		<description>Ways to rewire to (street + maybe sidewalk)</description>
 	</parameter>
 </command>
