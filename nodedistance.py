@@ -11,7 +11,7 @@ def main():
 
 	p1=osmcmd.Point.fromArgv(1)
 	p2=osmcmd.Point.fromArgv(2)
-	l=osmcmd.readLength(3,p1)
+	l=p1.lengthFromMeters(float(sys.argv[3]))
 
 	pm=p1+(p2-p1).dir(l)
 

@@ -3,9 +3,6 @@ import math
 import projections
 import OsmData
 
-def readLength(n,point):
-	return point.lengthFromMeters(float(sys.argv[n]))
-
 def readData():
 	data=OsmData.OsmData()
 	data.read(sys.stdin)
