@@ -9,13 +9,13 @@ def sntw(data,nodeid,wayid):
 	node=data.nodes[nodeid]
 	nodept=osmcmd.Point.fromNode(node)
 	way=data.ways[wayid]
-	waypts=osmcmd.makePointsFromWay(way,data)
+	wayChain=osmcmd.Chain.fromWay(way,data)
 
 	mi=None
 	ml=float('inf')
 	ms=float('inf')
-	for i,wp1,wp2 in [(i,waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
-		l,s=osmcmd.Segment(wp1,wp2).project(nodept)
+	for i,waySegment in enumerate(wayChain.segments):
+		l,s=waySegment.project(nodept)
 		if s<0 or s>1:
 			continue
 		if abs(l)<abs(ml):
@@ -26,26 +26,25 @@ def sntw(data,nodeid,wayid):
 	if mi is None:
 		return None
 
-	wp1,wp2=waypts[mi],waypts[mi+1]
-	id,_=(wp1+(wp2-wp1)*ms).makeNode(data)
+	id,_=wayChain.segments[mi].displace(ms).makeNode(data)
 	way[OsmData.ACTION]=OsmData.MODIFY
 	way[OsmData.REF].insert(mi+1,id)
 	return id
 
 def swtw(data,wcid,wuid):
 	wc=data.ways[wcid]
-	wcpts=osmcmd.makePointsFromWay(wc,data)
+	wcChain=osmcmd.Chain.fromWay(wc,data)
 	wu=data.ways[wuid]
-	wupts=osmcmd.makePointsFromWay(wu,data)
+	wuChain=osmcmd.Chain.fromWay(wu,data)
 
 	mi=None
 	ml=float('inf')
 	mf=None
-	for f,pc1,pc2 in ((True,wcpts[1],wcpts[0]),(False,wcpts[-2],wcpts[-1])):
-		for i,pu1,pu2 in ((i,wupts[i],wupts[i+1]) for i in range(len(wupts)-1)):
-			if pc2==pu1 or pc2==pu2:
+	for f,pcSegment in ((True,wcChain.segments[0].rev()),(False,wcChain.segments[-1])):
+		for i,puSegment in enumerate(wuChain.segments):
+			if pcSegment.p2==puSegment.p1 or pcSegment.p2==puSegment.p2:
 				continue
-			l,s=osmcmd.Segment(pc1,pc2).intersect(osmcmd.Segment(pu1,pu2))
+			l,s=pcSegment.intersect(puSegment)
 			if s<0 or s>1 or l<1:
 				continue
 			if l<ml:
@@ -56,8 +55,8 @@ def swtw(data,wcid,wuid):
 	if mi is None:
 		return None
 
-	pc1,pc2 = (wcpts[1],wcpts[0]) if mf else (wcpts[-2],wcpts[-1])
-	id,_=(pc1+(pc2-pc1)*ml).makeNode(data)
+	pcSegment = wcChain.segments[0].rev() if mf else wcChain.segments[-1]
+	id,_=pcSegment.displace(ml).makeNode(data)
 	wu[OsmData.ACTION]=OsmData.MODIFY
 	wu[OsmData.REF].insert(mi+1,id)
 	return id

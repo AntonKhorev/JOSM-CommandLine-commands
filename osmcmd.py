@@ -112,6 +112,8 @@ class Segment:
 	@classmethod
 	def fromNodes(cls,node1,node2):
 		return cls(Point.fromNode(node1),Point.fromNode(node2))
+	def rev(self):
+		return Segment(self.p2,self.p1)
 	def intersect(self,other):
 		# returns (displacement along self, displacement along other)
 		return solveLinEqns((
@@ -123,6 +125,8 @@ class Segment:
 		return Segment(
 			point,point+self.v.rot90().dir()
 		).intersect(self)
+	def displace(self,x):
+		return self.p1+self.v*x
 
 class Chain:
 	def __init__(self,points):
