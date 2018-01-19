@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import OsmData
 import osmcmd
 
 def main():
@@ -19,9 +20,10 @@ def main():
 
 	pm=p1+(p2-p1)*w
 
-	td=osmcmd.Data()
-	td.addNode(pm)
-	td.write()
+	data=OsmData.OsmData()
+	pm.makeNode(data)
+	data.addcomment("Done.")
+	data.write(sys.stdout)
 
 if __name__=='__main__':
 	main()

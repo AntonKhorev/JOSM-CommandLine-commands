@@ -27,27 +27,15 @@ def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
 		(pf2.y-pf1.y,pt1.y-pt2.y,pt1.y-pf1.y),
 	))
 
-# TODO put to Data class
 def makePointsFromWay(way,data):
 	return [Point.fromNode(waynode) for waynode in (
 		data.nodes[id] for id in way[OsmData.REF]
 	)]
 
 def fail(msg):
-	resultdata=Data()
-	resultdata.write(msg)
-
-class Data:
-	def __init__(self):
-		self.odata=OsmData.OsmData()
-	def addNode(self,point):
-		id=self.odata.addnode()
-		self.odata.nodes[id][OsmData.LON]=point.lon
-		self.odata.nodes[id][OsmData.LAT]=point.lat
-		self.odata.nodes[id][OsmData.TAG]={}
-	def write(self,msg="Done."):
-		self.odata.addcomment(msg)
-		self.odata.write(sys.stdout)
+	data=OsmData.OsmData()
+	data.addcomment(msg)
+	data.write(sys.stdout)
 
 class Point:
 	def __init__(self,x,y):
@@ -67,7 +55,7 @@ class Point:
 	@classmethod
 	def fromArgv(cls,n):
 		lon,lat=(float(c) for c in sys.argv[n].split(','))
-		return cls('lonlat',lon,lat)
+		return cls.fromLatLon(lat,lon)
 	@classmethod
 	def fromNode(cls,node):
 		return cls.fromLatLon(node[OsmData.LAT],node[OsmData.LON])
