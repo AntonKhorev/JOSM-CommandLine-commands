@@ -57,7 +57,7 @@ class Point:
 			self.lon,self.lat=projections.to4326((self.x,self.y),"EPSG:3857")
 			return getattr(self,name)
 		else:
-			raise AttributeError('invalid point attr "'+name+'"')
+			raise AttributeError('invalid Point attr "'+name+'"')
 	def __add__(self,vector):
 		return Point(self.x+vector.x,self.y+vector.y)
 	def __sub__(self,other):
@@ -90,7 +90,7 @@ class Vector:
 			self.length=math.sqrt(self.x**2+self.y**2)
 			return getattr(self,name)
 		else:
-			raise AttributeError('invalid vector attr "'+name+'"')
+			raise AttributeError('invalid Vector attr "'+name+'"')
 	def __mul__(self,scalar):
 		return Vector(self.x*scalar,self.y*scalar)
 	def dir(self,length=1): # used to return Direction class, now returns Vector of specified length with the same direction
@@ -103,6 +103,11 @@ class Segment:
 	def __init__(self,p1,p2):
 		self.p1=p1
 		self.p2=p2
+	def __getattr__(self,name):
+		if name=='v':
+			return self.p2-self.p1
+		else:
+			raise AttributeError('invalid Segment attr "'+name+'"')
 	@classmethod
 	def fromNodes(cls,node1,node2):
 		return cls(Point.fromNode(node1),Point.fromNode(node2))
@@ -112,3 +117,8 @@ class Segment:
 			(self.p2.x-self.p1.x,other.p1.x-other.p2.x,other.p1.x-self.p1.x),
 			(self.p2.y-self.p1.y,other.p1.y-other.p2.y,other.p1.y-self.p1.y),
 		))
+	def project(self,point):
+		# returns (signed distance to the right, displacement along)
+		return Segment(
+			point,point+self.v.rot90().dir()
+		).intersect(self)

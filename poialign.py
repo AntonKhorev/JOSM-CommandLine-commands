@@ -10,10 +10,6 @@ epsilon=1e-7
 maxIterations=1000
 delta=10/maxIterations
 
-def shootPoint(fp1,wp1,wp2):
-	fp2=fp1+(wp2-wp1).rot90().dir() # fake point to make perpendicular line
-	return osmcmd.Segment(fp1,fp2).intersect(osmcmd.Segment(wp1,wp2))
-
 def getClosestPointOnWay(fpt,waypts):
 	mi=None
 	ml2=float('inf')
@@ -29,7 +25,7 @@ def getClosestPointOnWay(fpt,waypts):
 	# try points inside segments
 	ml=math.sqrt(ml2)
 	for i,wp1,wp2 in [(i,waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
-		l,s=shootPoint(fpt,wp1,wp2)
+		l,s=osmcmd.Segment(wp1,wp2).project(fpt)
 		if s<0 or s>1:
 			continue
 		if abs(l)<ml:
@@ -62,12 +58,12 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 			pusher0=pusher1
 			pusher1=pusher
 		if isClosedWay:
-			l1,s1=shootPoint(p,buildingWayPoints[-2],buildingWayPoints[-1])
+			l1,s1=osmcmd.Segment(buildingWayPoints[-2],buildingWayPoints[-1]).project(p)
 		else:
-			l1,s1=shootPoint(p,buildingWayPoints[1],buildingWayPoints[0])
+			l1,s1=osmcmd.Segment(buildingWayPoints[1],buildingWayPoints[0]).project(p)
 		for i,wp1,wp2 in [(i,buildingWayPoints[i],buildingWayPoints[i+1]) for i in range(len(buildingWayPoints)-1)]:
 			l0,s0=l1,s1
-			l1,s1=shootPoint(p,wp1,wp2)
+			l1,s1=osmcmd.Segment(wp1,wp2).project(p)
 			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
 				recordPush((i,))
@@ -76,7 +72,7 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 				recordPush((i,i+1))
 		if not isClosedWay:
 			l0,s0=l1,s1
-			l1,s1=shootPoint(p,wp2,wp1)
+			l1,s1=osmcmd.Segment(wp2,wp1).project(p)
 			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
 				recordPush((i,))
@@ -89,7 +85,7 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1 or pusher0==pusher1):
 		wp1=buildingWayPoints[pusher1[0]]
 		wp2=buildingWayPoints[pusher1[1]]
-		l,s=shootPoint(p,wp1,wp2)
+		l,s=osmcmd.Segment(wp1,wp2).project(p)
 		ep=wp1+(wp2-wp1)*s
 		return p,ep,pusher1
 	elif len(pusher1)==2 and len(pusher0)==2:
