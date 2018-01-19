@@ -27,21 +27,19 @@ def getClosestPointOnWay(fpt,waypts):
 			mp=wpt
 			mi=(i,)
 	# try points inside segments
-	sides=[]
 	ml=math.sqrt(ml2)
 	for i,wp1,wp2 in [(i,waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
 		l,s=shootPoint(fpt,wp1,wp2)
-		sides.append(math.copysign(1,l))
 		if s<0 or s>1:
 			continue
 		if abs(l)<ml:
 			ml=abs(l)
 			mp=wp1+(wp2-wp1)*s
 			mi=(i,i+1)
-	return mp,mi,sides
+	return mp,mi
 
 def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
-	entrancePoint,buildingWayIndices,initialSides=getClosestPointOnWay(poiPoint,buildingWayPoints)
+	entrancePoint,buildingWayIndices=getClosestPointOnWay(poiPoint,buildingWayPoints)
 	if offsetLength<(poiPoint-entrancePoint).length:
 		# pull mode
 		newPoiPoint=entrancePoint+(poiPoint-entrancePoint).dir(offsetLength)
@@ -53,8 +51,8 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
 		return p+(p-wp).dir(offsetLength*delta)
-	def pushBySegment(s,wp1,wp2,initialSide): # invalidates l1,s1, but it shouldn't affect the result
-		nv=(wp2-wp1).rot90().dir(-initialSide*offsetLength*delta)
+	def pushBySegment(l,wp1,wp2): # invalidates l1,s1, but it shouldn't affect the result
+		nv=((wp1-wp2).rot90()*l).dir(offsetLength*delta)
 		return p+nv
 	for nIterations in range(maxIterations):
 		isModified=False
@@ -73,8 +71,8 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
 				p=pushByPoint(wp1)
 				recordPush((i,))
-			if 0<=s1<=1 and l1*initialSides[i]<offsetLength-epsilon:
-				p=pushBySegment(s1,wp1,wp2,initialSides[i])
+			if 0<=s1<=1 and abs(l1)<offsetLength-epsilon:
+				p=pushBySegment(l1,wp1,wp2)
 				recordPush((i,i+1))
 		if not isClosedWay:
 			l0,s0=l1,s1
