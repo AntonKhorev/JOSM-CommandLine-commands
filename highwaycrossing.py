@@ -6,17 +6,14 @@ import OsmData
 import osmcmd
 
 def main():
-	def enumWayPtPairs(way):
-		refs=way[OsmData.REF]
-		return ((i,osmcmd.Point.fromNode(data.nodes[refs[i]]),osmcmd.Point.fromNode(data.nodes[refs[i+1]])) for i in range(len(refs)-1))
-	def segmentsCross(pa1,pa2,pb1,pb2):
-		a,b=osmcmd.Segment(pa1,pa2).intersect(osmcmd.Segment(pb1,pb2))
+	def segmentsCross(s1,s2):
+		a,b=s1.intersect(s2)
 		return (a,b) if a>0 and a<1 and b>0 and b<1 else None
 	def waysCross(crid,whid):
 		return any(
-			segmentsCross(crpt1,crpt2,whpt1,whpt2)
-			for cri,crpt1,crpt2 in enumWayPtPairs(data.ways[crid])
-			for whi,whpt1,whpt2 in enumWayPtPairs(data.ways[whid])
+			segmentsCross(crSegment,whSegment)
+			for crSegment in osmcmd.Chain.fromWayId(crid,data).segments
+			for whSegment in osmcmd.Chain.fromWayId(whid,data).segments
 		)
 	def makeCrossing(crid,whids):
 		counts={'n':0,'t':0,'u':0,'j':0}
@@ -29,16 +26,16 @@ def main():
 		for whid in whids:
 			whway=data.ways[whid]
 			def attemptCrossTwoWays():
-				for cri,crpt1,crpt2 in enumWayPtPairs(data.ways[crid]):
-					for whi,whpt1,whpt2 in enumWayPtPairs(data.ways[whid]):
-						ls=segmentsCross(crpt1,crpt2,whpt1,whpt2)
+				for cri,crSegment in enumerate(osmcmd.Chain.fromWayId(crid,data).segments):
+					for whi,whSegment in enumerate(osmcmd.Chain.fromWayId(whid,data).segments):
+						ls=segmentsCross(crSegment,whSegment)
 						if not ls: continue
 
 						n1=data.nodes[data.ways[whid][OsmData.REF][whi]]
 						n2=data.nodes[data.ways[whid][OsmData.REF][whi+1]]
 						counts['n']+=1
 						crl,whl=ls
-						newid,newnode=(crpt1+(crpt2-crpt1)*crl).makeNode(data)
+						newid,newnode=(crSegment.p1+crSegment.v*crl).makeNode(data)
 						crway[OsmData.REF].insert(cri+1,newid)
 						whway[OsmData.ACTION]=OsmData.MODIFY
 						whway[OsmData.REF].insert(whi+1,newid)
