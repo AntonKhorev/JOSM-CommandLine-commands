@@ -12,7 +12,7 @@ delta=10/maxIterations
 
 def shootPoint(fp1,wp1,wp2):
 	fp2=fp1+(wp2-wp1).rot90().dir() # fake point to make perpendicular line
-	return osmcmd.shoot(fp1,fp2,wp1,wp2)
+	return osmcmd.Segment(fp1,fp2).intersect(osmcmd.Segment(wp1,wp2))
 
 def getClosestPointOnWay(fpt,waypts):
 	mi=None

@@ -37,6 +37,24 @@ class TestOsmCmd(unittest.TestCase):
 	# 	p1=Pt(0,0)
 	# 	p2=Pt(0,10)
 	# 	self.assertTrue(Pt(5,5).toLeftOfSegment(p1,p2))
+	def testSegment0(self):
+		s1=osmcmd.Segment(Pt(0,0),Pt(0,1))
+		s2=osmcmd.Segment(Pt(0,0),Pt(1,0))
+		d1,d2=s1.intersect(s2)
+		self.assertAlmostEqual(d1,0)
+		self.assertAlmostEqual(d2,0)
+	def testSegment1(self):
+		s1=osmcmd.Segment(Pt(0,1),Pt(1,1))
+		s2=osmcmd.Segment(Pt(1,0),Pt(1,1))
+		d1,d2=s1.intersect(s2)
+		self.assertAlmostEqual(d1,1)
+		self.assertAlmostEqual(d2,1)
+	def testSegmentX(self):
+		s1=osmcmd.Segment(Pt(0,0),Pt(2,2))
+		s2=osmcmd.Segment(Pt(1,0),Pt(0,1))
+		d1,d2=s1.intersect(s2)
+		self.assertAlmostEqual(d1,0.25)
+		self.assertAlmostEqual(d2,0.5)
 
 class TestPoiAlign(unittest.TestCase):
 	def testPullLine(self):

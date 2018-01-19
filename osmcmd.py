@@ -17,13 +17,6 @@ def solveLinEqns(m):
 	else:
 		return det0/det,det1/det
 
-# returns (displacement along pf1-pf2 line, displacement along pt1-pt2 line)
-def shoot(pf1,pf2,pt1,pt2): # "from" and "to" line segments by their endpoints
-	return solveLinEqns((
-		(pf2.x-pf1.x,pt1.x-pt2.x,pt1.x-pf1.x),
-		(pf2.y-pf1.y,pt1.y-pt2.y,pt1.y-pf1.y),
-	))
-
 def makePointsFromWay(way,data):
 	return [Point.fromNode(waynode) for waynode in (
 		data.nodes[id] for id in way[OsmData.REF]
@@ -105,3 +98,17 @@ class Vector:
 		return Vector(self.x*s,self.y*s)
 	def rot90(self):
 		return Vector(-self.y,self.x)
+
+class Segment:
+	def __init__(self,p1,p2):
+		self.p1=p1
+		self.p2=p2
+	@classmethod
+	def fromNodes(cls,node1,node2):
+		return cls(Point.fromNode(node1),Point.fromNode(node2))
+	def intersect(self,other):
+		# returns (displacement along self, displacement along other)
+		return solveLinEqns((
+			(self.p2.x-self.p1.x,other.p1.x-other.p2.x,other.p1.x-self.p1.x),
+			(self.p2.y-self.p1.y,other.p1.y-other.p2.y,other.p1.y-self.p1.y),
+		))
