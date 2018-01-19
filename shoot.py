@@ -28,8 +28,8 @@ def sntw(data,nodeid,wayid):
 
 	wp1,wp2=waypts[mi],waypts[mi+1]
 	id,_=(wp1+(wp2-wp1)*ms).makeNode(data)
-	data.ways[wayid][OsmData.ACTION]=OsmData.MODIFY
-	data.ways[wayid][OsmData.REF].insert(mi+1,id)
+	way[OsmData.ACTION]=OsmData.MODIFY
+	way[OsmData.REF].insert(mi+1,id)
 	return id
 
 def swtw(data,wcid,wuid):
@@ -58,8 +58,8 @@ def swtw(data,wcid,wuid):
 
 	pc1,pc2 = (wcpts[1],wcpts[0]) if mf else (wcpts[-2],wcpts[-1])
 	id,_=(pc1+(pc2-pc1)*ml).makeNode(data)
-	data.ways[wuid][OsmData.ACTION]=OsmData.MODIFY
-	data.ways[wuid][OsmData.REF].insert(mi+1,id)
+	wu[OsmData.ACTION]=OsmData.MODIFY
+	wu[OsmData.REF].insert(mi+1,id)
 	return id
 
 def main():
