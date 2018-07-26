@@ -65,7 +65,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPullLine(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(0,3),
-			[Pt(-10,0),Pt(10,0)],
+			osmcmd.Chain([Pt(-10,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,0)
@@ -76,7 +76,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushLine(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(0,1),
-			[Pt(-10,0),Pt(10,0)],
+			osmcmd.Chain([Pt(-10,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,0)
@@ -87,7 +87,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPullInsideAngle(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(4,3),
-			[Pt(0,10),Pt(0,0),Pt(10,0)],
+			osmcmd.Chain([Pt(0,10),Pt(0,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,4)
@@ -98,7 +98,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushInsideAngle(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(1,1),
-			[Pt(0,10),Pt(0,0),Pt(10,0)],
+			osmcmd.Chain([Pt(0,10),Pt(0,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,2)
@@ -109,7 +109,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushInsideAngleSide(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(1,5),
-			[Pt(0,10),Pt(0,0),Pt(10,0)],
+			osmcmd.Chain([Pt(0,10),Pt(0,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,2)
@@ -120,7 +120,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPullOutsideAngle(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(0,50),
-			[Pt(-10,0),Pt(0,20),Pt(20,0)],
+			osmcmd.Chain([Pt(-10,0),Pt(0,20),Pt(20,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,0)
@@ -131,7 +131,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushOutsideAngle(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(0,21),
-			[Pt(-10,0),Pt(0,20),Pt(20,0)],
+			osmcmd.Chain([Pt(-10,0),Pt(0,20),Pt(20,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,0)
@@ -142,7 +142,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushBeak(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(1,1),
-			[Pt(0,10),Pt(0,1),Pt(-100,-100),Pt(1,0),Pt(10,0)],
+			osmcmd.Chain([Pt(0,10),Pt(0,1),Pt(-100,-100),Pt(1,0),Pt(10,0)]),
 			2
 		)
 		self.assertAlmostEqual(npt.x,2)
@@ -150,7 +150,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushInsideAcuteAngle1(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(1,0),
-			[Pt(10,5),Pt(0,0),Pt(10,-5)],
+			osmcmd.Chain([Pt(10,5),Pt(0,0),Pt(10,-5)]),
 			math.sqrt(5)
 		)
 		self.assertAlmostEqual(npt.x,5,places=3)
@@ -161,7 +161,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushInsideAcuteAngle2(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(2,0),
-			[Pt(10,5),Pt(0,0),Pt(10,-5)],
+			osmcmd.Chain([Pt(10,5),Pt(0,0),Pt(10,-5)]),
 			math.sqrt(5)
 		)
 		self.assertAlmostEqual(npt.x,5,places=3)
@@ -172,7 +172,7 @@ class TestPoiAlign(unittest.TestCase):
 	def testPushInsideBluntAngle(self):
 		npt,wpt,wpi=poialign.getPoiAndEntranceLocations(
 			Pt(1,0),
-			[Pt(10,50),Pt(0,0),Pt(10,-50)],
+			osmcmd.Chain([Pt(10,50),Pt(0,0),Pt(10,-50)]),
 			10
 		)
 		self.assertGreater(npt.x,10)

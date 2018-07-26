@@ -10,12 +10,12 @@ epsilon=1e-7
 maxIterations=1000
 delta=10/maxIterations
 
-def getClosestPointOnWay(fpt,waypts):
+def getClosestPointOnChain(fpt,chain):
 	mi=None
 	ml2=float('inf')
 	mp=None
 	# try segment endpoints
-	for i,wpt in enumerate(waypts):
+	for i,wpt in enumerate(chain.points):
 		v=wpt-fpt
 		l2=v.x**2+v.y**2
 		if l2<ml2:
@@ -24,31 +24,30 @@ def getClosestPointOnWay(fpt,waypts):
 			mi=(i,)
 	# try points inside segments
 	ml=math.sqrt(ml2)
-	for i,wp1,wp2 in [(i,waypts[i],waypts[i+1]) for i in range(len(waypts)-1)]:
-		l,s=osmcmd.Segment(wp1,wp2).project(fpt)
+	for i,seg in enumerate(chain.segments):
+		l,s=seg.project(fpt)
 		if s<0 or s>1:
 			continue
 		if abs(l)<ml:
 			ml=abs(l)
-			mp=wp1+(wp2-wp1)*s
+			mp=seg.displace(s)
 			mi=(i,i+1)
 	return mp,mi
 
-def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
-	entrancePoint,buildingWayIndices=getClosestPointOnWay(poiPoint,buildingWayPoints)
+def getPoiAndEntranceLocations(poiPoint,buildingChain,offsetLength):
+	entrancePoint,buildingChainIndices=getClosestPointOnChain(poiPoint,buildingChain)
 	if offsetLength<(poiPoint-entrancePoint).length:
 		# pull mode
 		newPoiPoint=entrancePoint+(poiPoint-entrancePoint).dir(offsetLength)
-		return newPoiPoint,entrancePoint,buildingWayIndices
+		return newPoiPoint,entrancePoint,buildingChainIndices
 	# push mode
 	pusher0=None
 	pusher1=None
-	isClosedWay=buildingWayPoints[0]==buildingWayPoints[-1]
 	p=poiPoint
 	def pushByPoint(wp): # invalidates l1,s1, but it shouldn't affect the result
 		return p+(p-wp).dir(offsetLength*delta)
-	def pushBySegment(l,wp1,wp2): # invalidates l1,s1, but it shouldn't affect the result
-		nv=((wp1-wp2).rot90()*l).dir(offsetLength*delta)
+	def pushBySegment(l,seg): # invalidates l1,s1, but it shouldn't affect the result
+		nv=((seg.p1-seg.p2).rot90()*l).dir(offsetLength*delta)
 		return p+nv
 	for nIterations in range(maxIterations):
 		isModified=False
@@ -57,34 +56,34 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 			isModified=True
 			pusher0=pusher1
 			pusher1=pusher
-		if isClosedWay:
-			l1,s1=osmcmd.Segment(buildingWayPoints[-2],buildingWayPoints[-1]).project(p)
+		if buildingChain.isClosed:
+			l1,s1=buildingChain.segments[-1].project(p)
 		else:
-			l1,s1=osmcmd.Segment(buildingWayPoints[1],buildingWayPoints[0]).project(p)
-		for i,wp1,wp2 in [(i,buildingWayPoints[i],buildingWayPoints[i+1]) for i in range(len(buildingWayPoints)-1)]:
+			l1,s1=buildingChain.segments[0].rev().project(p)
+		for i,seg in enumerate(buildingChain.segments):
 			l0,s0=l1,s1
-			l1,s1=osmcmd.Segment(wp1,wp2).project(p)
-			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
-				p=pushByPoint(wp1)
+			l1,s1=seg.project(p)
+			if s0>1 and s1<0 and (p-seg.p1).length<offsetLength-epsilon:
+				p=pushByPoint(seg.p1)
 				recordPush((i,))
 			if 0<=s1<=1 and abs(l1)<offsetLength-epsilon:
-				p=pushBySegment(l1,wp1,wp2)
+				p=pushBySegment(l1,seg)
 				recordPush((i,i+1))
-		if not isClosedWay:
+		if not buildingChain.isClosed:
 			l0,s0=l1,s1
-			l1,s1=osmcmd.Segment(wp2,wp1).project(p)
-			if s0>1 and s1<0 and (p-wp1).length<offsetLength-epsilon:
-				p=pushByPoint(wp1)
+			l1,s1=seg.rev().project(p)
+			if s0>1 and s1<0 and (p-seg.p1).length<offsetLength-epsilon:
+				p=pushByPoint(seg.p1)
 				recordPush((i,))
 		if not isModified:
 			break
 	if pusher1 is None:
 		return p,None,None
 	elif len(pusher1)==1:
-		return p,buildingWayPoints[pusher1[0]],pusher1
+		return p,buildingChain.points[pusher1[0]],pusher1
 	elif len(pusher1)==2 and (pusher0 is None or len(pusher0)==1 or pusher0==pusher1):
-		wp1=buildingWayPoints[pusher1[0]]
-		wp2=buildingWayPoints[pusher1[1]]
+		wp1=buildingChain.points[pusher1[0]]
+		wp2=buildingChain.points[pusher1[1]]
 		l,s=osmcmd.Segment(wp1,wp2).project(p)
 		ep=wp1+(wp2-wp1)*s
 		return p,ep,pusher1
@@ -92,7 +91,7 @@ def getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength):
 		if pusher1[1]==pusher0[0]:
 			pusher0,pusher1=pusher1,pusher0
 		if pusher0[1]==pusher1[0]:
-			return p,buildingWayPoints[pusher1[0]],(pusher1[0],)
+			return p,buildingChain.points[pusher1[0]],(pusher1[0],)
 		else:
 			return p,None,None
 	else:
@@ -132,18 +131,20 @@ def main():
 		poiNode=data.nodes[poiNodeId]
 		poiPoint=osmcmd.Point.fromNode(poiNode)
 		offsetLength=poiPoint.lengthFromMeters(2)
-		buildingWayPoints=osmcmd.makePointsFromWay(buildingWay,data) # get points again in case the way was altered
+		buildingChain=osmcmd.Chain.fromWay(buildingWay,data) # get points again in case the way was altered
 		buildingWayNodeIds=buildingWay[OsmData.REF]
 		isBuildingWayClosed=buildingWayNodeIds[0]==buildingWayNodeIds[-1]
-		def getBuildingSegmentsAroundIndex(j):
+		def getBuildingChainAroundIndex(j):
+			pts=[]
 			if 0<j<len(buildingWayNodeIds)-1:
-				return buildingWayPoints[j-1:j+2]
+				pts=buildingChain.points[j-1:j+2]
 			elif isBuildingWayClosed:
-				return [buildingWayPoints[-2],buildingWayPoints[0],buildingWayPoints[1]]
+				pts=[buildingChain.points[-2],buildingChain.points[0],buildingChain.points[1]]
 			elif j==0:
-				return buildingWayPoints[:2]
+				pts=buildingChain.points[:2]
 			else:
-				return buildingWayPoints[-2:]
+				pts=buildingChain.points[-2:]
+			return osmcmd.Chain(pts)
 		connectedToBuildingIndices=set()
 		def getPossibleBuildingConnections():
 			for cwid in connectorWayIds:
@@ -157,12 +158,12 @@ def main():
 							):
 								connectedToBuildingIndices.add(j)
 		getPossibleBuildingConnections()
-		if len(connectedToBuildingIndices)==1:
+		if len(connectedToBuildingIndices)==1: # if poi is connected to the building, look only at segments adjacent to connection point
 			for j in connectedToBuildingIndices:
 				connectionPoint=osmcmd.Point.fromNode(data.nodes[buildingWayNodeIds[j]])
 				poiPoint=connectionPoint+(poiPoint-connectionPoint).dir(offsetLength*delta)
-				buildingWayPoints=getBuildingSegmentsAroundIndex(j)
-		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingWayPoints,offsetLength)
+				buildingChain=getBuildingChainAroundIndex(j)
+		newPoiPoint,entrancePoint,buildingWayIndices=getPoiAndEntranceLocations(poiPoint,buildingChain,offsetLength)
 		newPoiPoint.setNode(poiNode)
 		if poiNode[OsmData.TAG].get('entrance') is not None and entrancePoint is not None:
 			if len(buildingWayIndices)==1:

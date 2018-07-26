@@ -17,12 +17,6 @@ def solveLinEqns(m):
 	else:
 		return det0/det,det1/det
 
-# TODO replace with Chain
-def makePointsFromWay(way,data):
-	return [Point.fromNode(waynode) for waynode in (
-		data.nodes[id] for id in way[OsmData.REF]
-	)]
-
 def fail(msg):
 	data=OsmData.OsmData()
 	data.addcomment(msg)
@@ -143,5 +137,7 @@ class Chain:
 		if name=='segments':
 			self.segments=[Segment(self.points[i],self.points[i+1]) for i in range(len(self.points)-1)]
 			return getattr(self,name)
+		elif name=='isClosed':
+			return self.points[0]==self.points[-1]
 		else:
 			raise AttributeError('invalid Chain attr "'+name+'"')
