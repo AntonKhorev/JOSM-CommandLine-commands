@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="Transform3" run="python transform3.py {P1} {T1} {P2} {T2} {P3} {T3}">
+	<parameter required="true" type="any" mininstances="1" maxinstances="0">
+		<name>Objects</name>
+		<description>What to transform</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>P1</name>
+		<description>Original point 1</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>T1</name>
+		<description>Transformed point 1</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>P2</name>
+		<description>Original point 2</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>T2</name>
+		<description>Transformed point 2</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>P3</name>
+		<description>Original point 3</description>
+	</parameter>
+	<parameter required="true" type="point">
+		<name>T3</name>
+		<description>Transformed point 3</description>
+	</parameter>
+</command>
