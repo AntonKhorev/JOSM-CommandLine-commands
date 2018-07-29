@@ -22,7 +22,7 @@ def main():
 	opdata=osmcmd.readData()
 	data.mergedata(opdata)
 
-	epsilon=10e-4
+	epsilon=10e-6
 	nIterations=100
 
 	def transformPoint(p):
@@ -35,6 +35,7 @@ def main():
 				[(p1-p0).x,(p3-p0).x,(p-p0).x+(p3-p2).x*a0*b0+(p1-p0).x*a0*b0],
 				[(p1-p0).y,(p3-p0).y,(p-p0).y+(p3-p2).y*a0*b0+(p1-p0).y*a0*b0],
 			])
+			#print('step',i,'coords',a1,b1,'dist2',(a0-a1)**2+(b0-b1)**2,file=sys.stderr) # debug
 			if (a0-a1)**2+(b0-b1)**2<epsilon**2:
 				break
 			a0=a1
