@@ -35,10 +35,10 @@ def main():
 		)
 		x,y=segment1.intersect(segment2)
 		cornerPoint=segment1.displace(x)
-		cornerNid=cornerPoint.makeNode(data)
-		# cornerWid=data.addway()
-		# cornerWay=data.ways[cornerWid]
-		# cornerWay[OsmData.REF]=[cornerSegmentIds[0][1],cornerNid,cornerSegmentIds[1][1]]
+		cornerNid,cornerNode=cornerPoint.makeNode(data)
+		cornerWid=data.addway()
+		cornerWay=data.ways[cornerWid]
+		cornerWay[OsmData.REF]=[cornerSegmentIds[0][1],cornerNid,cornerSegmentIds[1][1]]
 		data.addcomment('Restored corner for way #'+str(wid))
 	data.write(sys.stdout)
 
