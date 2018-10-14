@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="CornerRestore" run="python cornerrestore.py">
+	<parameter required="true" type="any" mininstances="2" maxinstances="0">
+		<name>Objects</name>
+		<description>Way + corner points</description>
+	</parameter>
+</command>
