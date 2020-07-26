@@ -15,6 +15,9 @@ def main():
 	if '|' in pr:
 		a,b=(float(t) for t in pr.split('|'))
 		w=a/(a+b)
+	elif ':' in pr:
+		a,b=(float(t) for t in pr.split(':'))
+		w=a/(a+b)
 	else:
 		w=float(pr)
 
