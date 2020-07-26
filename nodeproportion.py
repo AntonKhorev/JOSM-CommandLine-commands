@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import fractions
 import OsmData
 import osmcmd
 
@@ -19,7 +20,7 @@ def main():
 		a,b=(float(t) for t in pr.split(':'))
 		w=a/(a+b)
 	else:
-		w=float(pr)
+		w=float(fractions.Fraction(pr))
 
 	pm=p1+(p2-p1)*w
 
