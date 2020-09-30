@@ -7,12 +7,13 @@ import OsmData
 import osmcmd
 
 def processPoi(poi):
-	if 'operator' in poi[OsmData.TAG]:
-		op=poi[OsmData.TAG]['operator']
-		op2,n=re.subn(r'"(.*)"',r'«\1»',op)
+	for tag in ['operator','name','alt_name']:
+		if tag not in poi[OsmData.TAG]: continue
+		v=poi[OsmData.TAG][tag]
+		v2,n=re.subn(r'"(.*)"',r'«\1»',v)
 		if n>0:
 			poi[OsmData.ACTION]=OsmData.MODIFY
-			poi[OsmData.TAG]['operator']=op2
+			poi[OsmData.TAG][tag]=v2
 
 def main():
 	data=osmcmd.readData()
