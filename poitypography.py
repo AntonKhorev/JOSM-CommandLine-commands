@@ -17,6 +17,7 @@ def processPoi(poi):
 				poi[OsmData.TAG][tag]=v2
 		sub(r'"(.*)"',r'«\1»')
 		sub(r'№\s*',r'№ ')
+		sub(r'\s+[-—]\s+',' — ')
 
 def main():
 	data=osmcmd.readData()
