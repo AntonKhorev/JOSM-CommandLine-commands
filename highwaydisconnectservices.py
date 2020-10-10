@@ -15,8 +15,11 @@ def main():
 		for nodeId in way[OsmData.REF]:
 			serviceNodes[nodeId]=True
 	for id,way in highwayData.ways.items():
-		if way[OsmData.TAG].get('highway') not in (
-			'residential','unclassified','tertiary','secondary','primary'
+		tags=way[OsmData.TAG]
+		if not (
+			tags.get('highway') in (
+				'residential','unclassified','tertiary','secondary','primary'
+			) or tags.get('highway')=='footway' and tags.get('footway')=='sidewalk'
 		): continue
 		# assume street is not circular
 		i=1
