@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<command version="3" name="HighwayDisconnect" run="python highwaydisconnect.py {Formula}">
+	<parameter required="true" type="any" mininstances="2" maxinstances="0">
+		<name>Highways</name>
+		<description>Streets and service highways to be disconnected from streets</description>
+	</parameter>
+	<parameter required="true" type="string">
+		<name>Formula</name>
+		<description>Disconnect what from what: highway tag values or special values (street,sidewalk,crossing)</description>
+		<value>street,sidewalk>service</value>
+	</parameter>
+</command>

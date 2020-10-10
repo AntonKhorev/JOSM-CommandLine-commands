@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<command version="3" name="HighwayDisconnectServices" run="python highwaydisconnectservices.py">
-	<parameter required="true" type="any" mininstances="2" maxinstances="0">
-		<name>Highways</name>
-		<description>Streets and service highways to be disconnected from streets</description>
-	</parameter>
-</command>
