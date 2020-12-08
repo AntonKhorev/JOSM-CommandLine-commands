@@ -7,7 +7,7 @@ import OsmData
 import osmcmd
 
 def processPoi(poi):
-	for tag in ['operator','name','alt_name']:
+	for tag in (t+s for t in ('operator','name','alt_name') for s in ('',':ru')):
 		if tag not in poi[OsmData.TAG]: continue
 		def sub(regex,repl):
 			v=poi[OsmData.TAG][tag]
